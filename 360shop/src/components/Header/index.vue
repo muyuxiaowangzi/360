@@ -11,9 +11,10 @@
             <span>360智慧生活</span>
           </div>
           <div class="top-right">
-            <span>登录</span>
+            <span><router-link to="/myIfo">崔旺</router-link></span>
             <span> 注册</span>
-            <span>360手机商城</span>
+            <span><router-link to="/order">订单结算</router-link></span>
+            <span><router-link to="/shop">商品详情</router-link></span>
             <span><img src="./image/shop.jpg" alt=""/></span>
           </div>
         </div>
@@ -21,9 +22,13 @@
       <div class="bottom">
         <div class="bottom-bottom">
           <div class="bottom-left">
-            <span
-              ><img src="https://p.ssl.qhimg.com/t0102789b8d00c3dfce.png" alt=""
-            /></span>
+            <span>
+              <router-link to="/"
+                ><img
+                  src="https://p.ssl.qhimg.com/t0102789b8d00c3dfce.png"
+                  alt=""
+              /></router-link>
+            </span>
             <span>新品推荐</span>
             <span>热卖</span>
             <span>社区</span>
@@ -119,6 +124,7 @@ export default {
     top: 0;
     right: 0;
     margin-bottom: 40px;
+    z-index: 999;
     .top-top {
       font-size: 12px;
       height: 40px;
