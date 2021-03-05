@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="container_top">
-      <div class="testNav">
+      <div class="testNav" @mouseleave="noEnterClick">
         <div class="typeNav">
           <div class="typeNav_top">
             <a class="iconfont icon-fenlei" href="javascript:;">全部...</a>
@@ -11,7 +11,6 @@
               v-for="(nav, index) in typeNavInfo.category"
               :key="nav.id"
               @mouseenter="enterClick(index, nav.id)"
-              @mouseleave="noEnterClick"
               :class="enterIndex === index ? 'active_li' : ''"
             >
               <a href="javascript:;">{{ nav.name }}</a>
@@ -19,7 +18,7 @@
           </ul>
         </div>
         <div class="typeNav_right" :class="isShowRight ? 'showRight' : ''">
-          <div class="type_name">
+          <div class="typeNav_cen">
             <div
               class="type_list"
               v-for="type in categoryInfo.secondary"
@@ -52,66 +51,47 @@
           loop: true, // 循环模式选项
           // 如果需要分页器
           pagination: {
-            el: '.swiper-pagination',
+            el: '.swiper-pagination'
           },
           autoplay: true,
           effect: 'fade',
           // 如果需要前进后退按钮
           navigation: {
             nextEl: '.swiper-button-next',
-            prevEl: '.swiper-button-prev',
-          },
+            prevEl: '.swiper-button-prev'
+          }
         }"
       >
-        <swiper-slide class="swipereItem">
+        <swiper-slide
+          class="swipereItem"
+          v-for="swip in bannerList"
+          :key="swip.title"
+        >
           <a
             href="javascript:;"
-            style="background-image: url('https://p0.ssl.qhimg.com/t014142307574cd47c8.webp')"
-          ></a>
-        </swiper-slide>
-        <swiper-slide class="swipereItem">
-          <a
-            href="javascript:;"
-            style="background-image: url('https://p5.ssl.qhimg.com/t01124102be6ddde8d1.webp')"
-          ></a>
-        </swiper-slide>
-        <swiper-slide class="swipereItem">
-          <a
-            href="javascript:;"
-            style="background-image: url('https://p2.ssl.qhimg.com/t01cd7e0d2b07fb7bd3.webp')"
-          ></a>
-        </swiper-slide>
-        <swiper-slide class="swipereItem">
-          <a
-            href="javascript:;"
-            style="background-image: url('https://p0.ssl.qhimg.com/t01eb2fdd57cc343e08.webp')"
+            :style="`background-image: url(${swip.pic})`"
           ></a>
         </swiper-slide>
         <!-- <div class="swiper-pagination" slot="pagination"></div> -->
       </swiper>
     </div>
     <!-- 热门活动 -->
-    <div class="active">
+    <div class="active" v-if="IndexContainer.floors">
       <div class="active_center">
         <div class="active_text">
           <span>热门活动</span>
         </div>
         <div class="active_list">
-          <a href="javascript:;">
-            <img src="./images/l1.jpg" />
-          </a>
-          <a href="javascript:;">
-            <img src="./images/l2.jpg" />
-          </a>
-          <a href="javascript:;">
-            <img src="./images/l3.jpg" />
-          </a>
-          <a href="javascript:;">
-            <img src="./images/l4.jpg" />
+          <a
+            href="javascript:;"
+            v-for="active in IndexContainer.floors[0].data.list"
+            :key="active.pic"
+          >
+            <img :src="active.pic" />
           </a>
         </div>
         <div>
-          <img src="./images/c1.jpg" alt="" />
+          <img :src="IndexContainer.floors[1].data.pic" alt="" />
         </div>
       </div>
     </div>
@@ -206,214 +186,33 @@
       </div>
     </div>
     <!-- 爆款推荐 -->
-    <div class="recommend">
+    <div class="recommend" v-if="IndexContainer.floors">
       <div class="recommend_text">
         <span>爆款推荐</span>
       </div>
       <div class="recommend_top">
-        <a href="javascript:;">
-          <img src="./images/r1.jpg" alt="" />
-        </a>
-        <a href="javascript:;">
-          <img src="./images/r2.jpg" alt="" />
-        </a>
-        <a href="javascript:;">
-          <img src="./images/r3.jpg" alt="" />
-        </a>
-        <a href="javascript:;">
-          <img src="./images/r4.jpg" alt="" />
+        <a
+          href="javascript:;"
+          v-for="rec in IndexContainer.floors[3].data.list"
+          :key="rec.pic"
+        >
+          <img :src="rec.pic" alt="" />
         </a>
       </div>
       <a class="recommend_bottom">
-        <img src="./images/r5.jpg" alt="" />
+        <img :src="IndexContainer.floors[5].data.pic" alt="" />
       </a>
     </div>
 
     <!-- floor -->
     <!-- 家庭安防 -->
-    <div class="floor">
-      <div class="floor_text">
-        <span>家庭安防</span>
-        <a href="javascript:;">全部>></a>
-      </div>
-
-      <div class="floor_bottom">
-        <a href="javascript:;">
-          <img src="./images/f1.jpg" alt="" />
-        </a>
-        <a href="javascript:;">
-          <img src="./images/f2.jpg" alt="" />
-          <p class="p_top">360 智能摄像机云台变焦版1080P D866</p>
-          <p class="p_bottom">9倍混合变焦 微光全彩技术 360°</p>
-          <strong class="floor_price">￥199</strong>
-          <strong class="floor_noPrice">￥349</strong>
-        </a>
-        <a href="javascript:;">
-          <img src="./images/f3.jpg" alt="" />
-          <p class="p_top">360 智能摄像机云台变焦版1080P D866</p>
-          <p class="p_bottom">9倍混合变焦 微光全彩技术 360°</p>
-          <strong class="floor_price">￥199</strong>
-          <strong class="floor_noPrice">￥349</strong>
-        </a>
-        <a href="javascript:;">
-          <img src="./images/f4.jpg" alt="" />
-          <p class="p_top">360 智能摄像机云台变焦版1080P D866</p>
-          <p class="p_bottom">9倍混合变焦 微光全彩技术 360°</p>
-          <strong class="floor_price">￥199</strong>
-          <strong class="floor_noPrice">￥349</strong>
-        </a>
-        <a href="javascript:;">
-          <img src="./images/f5.jpg" alt="" />
-          <p class="p_top">360 智能摄像机云台变焦版1080P D866</p>
-          <p class="p_bottom">9倍混合变焦 微光全彩技术 360°</p>
-          <strong class="floor_price">￥199</strong>
-          <strong class="floor_noPrice">￥349</strong>
-        </a>
-        <a href="javascript:;">
-          <img src="./images/f6.jpg" alt="" />
-          <p class="p_top">360 智能摄像机云台变焦版1080P D866</p>
-          <p class="p_bottom">9倍混合变焦 微光全彩技术 360°</p>
-          <strong class="floor_price">￥199</strong>
-          <strong class="floor_noPrice">￥349</strong>
-        </a>
-        <a href="javascript:;">
-          <img src="./images/f7.jpg" alt="" />
-          <p class="p_top">360 智能摄像机云台变焦版1080P D866</p>
-          <p class="p_bottom">9倍混合变焦 微光全彩技术 360°</p>
-          <strong class="floor_price">￥199</strong>
-          <strong class="floor_noPrice">￥349</strong>
-        </a>
-      </div>
-
-      <div>
-        <img src="./images/f8.jpg" alt="" />
-      </div>
-    </div>
-
-    <!-- 家庭安防 -->
-    <div class="floor">
-      <div class="floor_text">
-        <span>家庭安防</span>
-        <a href="javascript:;">全部>></a>
-      </div>
-
-      <div class="floor_bottom">
-        <a href="javascript:;">
-          <img src="./images/f1.jpg" alt="" />
-        </a>
-        <a href="javascript:;">
-          <img src="./images/f2.jpg" alt="" />
-          <p class="p_top">360 智能摄像机云台变焦版1080P D866</p>
-          <p class="p_bottom">9倍混合变焦 微光全彩技术 360°</p>
-          <strong class="floor_price">￥199</strong>
-          <strong class="floor_noPrice">￥349</strong>
-        </a>
-        <a href="javascript:;">
-          <img src="./images/f3.jpg" alt="" />
-          <p class="p_top">360 智能摄像机云台变焦版1080P D866</p>
-          <p class="p_bottom">9倍混合变焦 微光全彩技术 360°</p>
-          <strong class="floor_price">￥199</strong>
-          <strong class="floor_noPrice">￥349</strong>
-        </a>
-        <a href="javascript:;">
-          <img src="./images/f4.jpg" alt="" />
-          <p class="p_top">360 智能摄像机云台变焦版1080P D866</p>
-          <p class="p_bottom">9倍混合变焦 微光全彩技术 360°</p>
-          <strong class="floor_price">￥199</strong>
-          <strong class="floor_noPrice">￥349</strong>
-        </a>
-        <a href="javascript:;">
-          <img src="./images/f5.jpg" alt="" />
-          <p class="p_top">360 智能摄像机云台变焦版1080P D866</p>
-          <p class="p_bottom">9倍混合变焦 微光全彩技术 360°</p>
-          <strong class="floor_price">￥199</strong>
-          <strong class="floor_noPrice">￥349</strong>
-        </a>
-        <a href="javascript:;">
-          <img src="./images/f6.jpg" alt="" />
-          <p class="p_top">360 智能摄像机云台变焦版1080P D866</p>
-          <p class="p_bottom">9倍混合变焦 微光全彩技术 360°</p>
-          <strong class="floor_price">￥199</strong>
-          <strong class="floor_noPrice">￥349</strong>
-        </a>
-        <a href="javascript:;">
-          <img src="./images/f7.jpg" alt="" />
-          <p class="p_top">360 智能摄像机云台变焦版1080P D866</p>
-          <p class="p_bottom">9倍混合变焦 微光全彩技术 360°</p>
-          <strong class="floor_price">￥199</strong>
-          <strong class="floor_noPrice">￥349</strong>
-        </a>
-      </div>
-
-      <div>
-        <img src="./images/f8.jpg" alt="" />
-      </div>
-    </div>
-
-    <!-- 家庭安防 -->
-    <div class="floor">
-      <div class="floor_text">
-        <span>家庭安防</span>
-        <a href="javascript:;">全部>></a>
-      </div>
-
-      <div class="floor_bottom">
-        <a href="javascript:;">
-          <img src="./images/f1.jpg" alt="" />
-        </a>
-        <a href="javascript:;">
-          <img src="./images/f2.jpg" alt="" />
-          <p class="p_top">360 智能摄像机云台变焦版1080P D866</p>
-          <p class="p_bottom">9倍混合变焦 微光全彩技术 360°</p>
-          <strong class="floor_price">￥199</strong>
-          <strong class="floor_noPrice">￥349</strong>
-        </a>
-        <a href="javascript:;">
-          <img src="./images/f3.jpg" alt="" />
-          <p class="p_top">360 智能摄像机云台变焦版1080P D866</p>
-          <p class="p_bottom">9倍混合变焦 微光全彩技术 360°</p>
-          <strong class="floor_price">￥199</strong>
-          <strong class="floor_noPrice">￥349</strong>
-        </a>
-        <a href="javascript:;">
-          <img src="./images/f4.jpg" alt="" />
-          <p class="p_top">360 智能摄像机云台变焦版1080P D866</p>
-          <p class="p_bottom">9倍混合变焦 微光全彩技术 360°</p>
-          <strong class="floor_price">￥199</strong>
-          <strong class="floor_noPrice">￥349</strong>
-        </a>
-        <a href="javascript:;">
-          <img src="./images/f5.jpg" alt="" />
-          <p class="p_top">360 智能摄像机云台变焦版1080P D866</p>
-          <p class="p_bottom">9倍混合变焦 微光全彩技术 360°</p>
-          <strong class="floor_price">￥199</strong>
-          <strong class="floor_noPrice">￥349</strong>
-        </a>
-        <a href="javascript:;">
-          <img src="./images/f6.jpg" alt="" />
-          <p class="p_top">360 智能摄像机云台变焦版1080P D866</p>
-          <p class="p_bottom">9倍混合变焦 微光全彩技术 360°</p>
-          <strong class="floor_price">￥199</strong>
-          <strong class="floor_noPrice">￥349</strong>
-        </a>
-        <a href="javascript:;">
-          <img src="./images/f7.jpg" alt="" />
-          <p class="p_top">360 智能摄像机云台变焦版1080P D866</p>
-          <p class="p_bottom">9倍混合变焦 微光全彩技术 360°</p>
-          <strong class="floor_price">￥199</strong>
-          <strong class="floor_noPrice">￥349</strong>
-        </a>
-      </div>
-
-      <div>
-        <img src="./images/f8.jpg" alt="" />
-      </div>
-    </div>
+    <Floor v-for="(floors, index) in floorList" :key="index" :floors="floors" />
   </div>
 </template>
 <script>
+import Floor from "./components/Floor/Floor";
 export default {
-  name: 'Home',
+  name: "Home",
   data() {
     return {
       isShowRight: false,
@@ -425,38 +224,78 @@ export default {
       categoryInfo: {},
       //保存上一次请求的分类id
       preId: null,
-    }
+      //首页相关数据
+      IndexContainer: {}
+    };
   },
   async mounted() {
     //获取分类数据
-    const result = await this.$API.reqPrimaryCategory()
-    console.log(result)
-    this.typeNavInfo = result.data.data
+    const result = await this.$API.reqPrimaryCategory();
+    this.typeNavInfo = result.data.data;
+    // console.log(result);
+
+    const resIndexContainer = await this.$API.reqIndexContainer();
+    console.log(resIndexContainer);
+    //保存banner图数据
+    this.IndexContainer = resIndexContainer.data.data;
   },
   methods: {
     //分类移入事件
     async enterClick(index, id) {
       //改变下标，切换选中状态
-      this.enterIndex = index
+      this.enterIndex = index;
       //右边是否显示
-      this.isShowRight = true
+      this.isShowRight = true;
       // 判断是否还是移入的前一个
-      if (id === this.preId) return
+      if (id === this.preId) return;
       //根据分类id获取分类详细数据
       const result = await this.$API.reqSecondaryCategory(
         this.typeNavInfo.type,
         id
-      )
-      this.categoryInfo = result.data.data
-      this.preId = id
+      );
+      this.categoryInfo = result.data.data;
+      this.preId = id;
     },
     noEnterClick() {
-      this.isShowRight = false
+      this.isShowRight = false;
       //改变下标，切换选中状态
-      this.enterIndex = -1
-    },
+      this.enterIndex = -1;
+    }
   },
-}
+  computed: {
+    //banner图数据
+    bannerList() {
+      const { frames } = this.IndexContainer;
+      if (frames) {
+        return frames.banner.list;
+      }
+      return [];
+    },
+    //floor数据
+    floorList() {
+      const { floors } = this.IndexContainer;
+      if (floors) {
+        const arr = floors.slice(6, 18);
+        // let num = 0
+        let nowArr = [];
+        let lastArr = [];
+        return arr.reduce((newArr, item, index) => {
+          nowArr.push(item);
+          if (index % 2 != 0) {
+            lastArr.push(nowArr);
+            nowArr = [];
+            return lastArr;
+          }
+          return newArr;
+        }, []);
+      }
+      return [];
+    }
+  },
+  components: {
+    Floor
+  }
+};
 </script>
 <style>
 .container {
@@ -559,15 +398,25 @@ export default {
   top: 0;
   left: 230px;
   z-index: 99;
-  padding: 20px 20px 20px 0;
+  padding: 0 80px 80px 0;
+  box-sizing: border-box;
 }
 .container .container_top .typeNav_right.showRight {
   display: block;
 }
-.container .container_top .typeNav_right .type_name .type_list {
+.container .container_top .typeNav_right .typeNav_cen {
+  height: 530px;
+  overflow-y: auto;
+}
+.container .container_top .typeNav_right .typeNav_cen .type_list {
   position: relative;
 }
-.container .container_top .typeNav_right .type_name .type_list .typeList_title {
+.container
+  .container_top
+  .typeNav_right
+  .typeNav_cen
+  .type_list
+  .typeList_title {
   display: inline-block;
   width: 60px;
   height: 30px;
@@ -581,15 +430,21 @@ export default {
   line-height: 30px;
   text-align: center;
 }
-.container .container_top .typeNav_right .type_name .type_list .typeList_item {
+.container
+  .container_top
+  .typeNav_right
+  .typeNav_cen
+  .type_list
+  .typeList_item {
   padding-left: 120px;
   font-size: 14px;
+  margin: 30px 0;
 }
 
 .container
   .container_top
   .typeNav_right
-  .type_name
+  .typeNav_cen
   .type_list
   .typeList_item
   a {
@@ -600,7 +455,7 @@ export default {
 .container
   .container_top
   .typeNav_right
-  .type_name
+  .typeNav_cen
   .type_list
   .typeList_item
   a
@@ -612,7 +467,7 @@ export default {
 .container
   .container_top
   .typeNav_right
-  .type_name
+  .typeNav_cen
   .type_list
   .typeList_item
   a
@@ -649,6 +504,11 @@ export default {
   border-radius: 4px;
   overflow: hidden;
   margin: 0 20px 20px 0;
+}
+.container .active .active_center .active_list a:hover {
+  box-shadow: 0 15px 30px rgb(0 0 0 / 20%);
+  transform: translateY(-2px);
+  transition: 0.2s all ease-out;
 }
 .container .active .active_center .active_list a:last-child {
   margin-right: 0;
@@ -703,6 +563,13 @@ export default {
   width: 240px;
   height: 380px;
   float: left;
+  margin-bottom: 20px;
+}
+.container .timeShop .time_bottom .timeBottom_left:hover {
+  box-shadow: 0 15px 30px rgb(0 0 0 / 20%);
+  transform: translateY(-2px);
+  /* background: rgba(0, 0, 0, 0.2); */
+  transition: 0.2s all ease-out;
 }
 .container .timeShop .time_bottom .timeBottom_left img {
   width: 100%;
@@ -723,6 +590,11 @@ export default {
   border-radius: 4px;
   padding: 19px 15px;
   box-sizing: border-box;
+}
+.container .timeShop .time_bottom .timeBottom_right .time_item:hover {
+  box-shadow: 0 15px 30px rgb(0 0 0 / 10%);
+  transform: translateY(-2px);
+  transition: 0.2s all ease-out;
 }
 .container .timeShop .time_bottom .timeBottom_right .time_item img {
   width: 160px;
@@ -799,6 +671,11 @@ export default {
   justify-content: space-between;
   /* margin-top: 20px; */
 }
+.container .recommend .recommend_top a:hover {
+  box-shadow: 0 15px 30px rgb(0 0 0 / 20%);
+  transform: translateY(-2px);
+  transition: 0.2s all ease-out;
+}
 .container .recommend .recommend_top img {
   width: 280px;
   height: 242px;
@@ -811,82 +688,5 @@ export default {
 }
 .container .recommend .recommend_bottom img {
   width: 100%;
-}
-
-/* 家庭安防 */
-.container .floor {
-  width: 1180px;
-  margin: 0 auto;
-}
-.container .floor .floor_text {
-  height: 24px;
-  margin: 20px 0;
-}
-.container .floor .floor_text span {
-  line-height: 24px;
-  font-size: 20px;
-}
-.container .floor .floor_text a {
-  font-size: 14px;
-  color: #666;
-  margin-left: 10px;
-}
-.container .floor .floor_bottom a {
-  display: inline-block;
-  background-color: #fff;
-}
-.container .floor .floor_bottom a:first-child {
-  width: 580px;
-  height: 460px;
-  padding: 0;
-  float: left;
-  overflow: hidden;
-}
-.container .floor .floor_bottom a:last-child {
-  margin: 0;
-}
-.container .floor .floor_bottom a:nth-of-type(3) {
-  margin: 0;
-}
-.container .floor .floor_bottom a {
-  width: 280px;
-  padding: 30px 20px;
-  height: 460px;
-  box-sizing: border-box;
-  margin-right: 20px;
-  margin-bottom: 20px;
-  border-radius: 4px;
-  text-align: center;
-}
-.container .floor .floor_bottom a img {
-  width: 100%;
-  vertical-align: top;
-  margin-bottom: 30px;
-}
-.container .floor .floor_bottom a .p_top {
-  font-size: 18px;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
-.container .floor .floor_bottom a .p_bottom {
-  color: #999;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  font-size: 14px;
-  /* line-height: 24px; */
-  margin-top: 5px;
-}
-.container .floor .floor_bottom a .floor_price {
-  font-size: 20px;
-  color: #dd0e00;
-  margin-top: 10px;
-}
-.container .floor .floor_bottom a .floor_noPrice {
-  font-size: 14px;
-  color: #999;
-  text-decoration: line-through;
-  line-height: 65px;
 }
 </style>
