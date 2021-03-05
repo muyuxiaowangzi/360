@@ -1,11 +1,16 @@
 <template>
   <div id="app">
-    <router-view></router-view>
+    <Header />
+    <router-view />
   </div>
 </template>
 <script>
+import Header from './components/Header'
 export default {
-  components: {},
+  name:'App',
+  components: {
+    Header
+  },
 }
 </script>
 <style lang="scss"></style>
