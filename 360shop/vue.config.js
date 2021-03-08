@@ -1,6 +1,14 @@
 module.exports = {
   devServer: {
-    proxy: 'https://mall.360.cn',
-    changeOrigin: true, // 支持跨域
+    proxy: {
+      "/api": {
+        target: "https://mall.360.cn",
+        ws: true,
+        changeOrigin: true,
+        pathRewrite: {
+          "^/api": ""
+        }
+      }
+    }
   }
-}
+};
