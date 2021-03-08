@@ -107,7 +107,7 @@
               <input
                 type="text"
                 class="ipt"
-                v-model="keyword"
+                v-model="key_word"
                 @keyup.enter="toSearch"
               />
               <i class="iconfont icon-sousuo" @click="toSearch()"></i>
@@ -124,7 +124,7 @@ export default {
   name: "Heater",
   data() {
     return {
-      keyword: "",
+      key_word: "",
       dialogFormVisible: false,
       dialogFormRegister: false,
       form: {
@@ -151,7 +151,7 @@ export default {
   },
   methods: {
     toSearch() {
-      this.$router.push({ name: "search", params: { keyword: this.keyword } });
+      this.$router.push({ name: "search", params: { key_word: this.key_word } });
     },
     //登录
     async submitLogin() {
