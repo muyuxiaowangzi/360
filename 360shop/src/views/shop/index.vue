@@ -7,16 +7,21 @@
         <!-- 放大镜区域 -->
         <div class="Magnifier" ref="Magnifier">
           <div class="event" @mousemove="handleMove"></div>
-          <div class="smallImg">
-            <img src="../../static/images/2.png" alt />
+          <div class="smallImg" v-if="shopDetail.imgContent">
+            <!-- <img :src="shopDetail.video" /> -->
+            <img alt="" :src="shopDetail.imgContent[currentIndex]" />
+            <!-- <video :src="shopDetail.video"></video> -->
           </div>
           <div class="zoom" ref="zoom"></div>
-          <div class="bigImg">
-            <img ref="bigImg" src="../../static/images/2.png" alt />
+          <div class="bigImg" v-if="shopDetail.imgContent">
+            <img ref="bigImg" :src="shopDetail.imgContent[currentIndex]" alt />
           </div>
         </div>
         <!-- 轮播图 -->
-        <ImageList />
+        <ImageList
+          :shopDetail="shopDetail"
+          @changeCurrentIndex="changeCurrentIndex"
+        />
         <!-- 底部详情 -->
         <div class="detail">
           <ul>
@@ -43,11 +48,14 @@
       <div class="rightContainer">
         <div class="product-info">
           <!-- 标题区域 -->
-          <div class="info-title">360 家庭防火墙路由器V5X</div>
+          <div class="info-title">{{ shopDetail.title }}</div>
           <div class="info-subTitle">
-            <span>游戏加速 告别延迟卡顿</span>
-            <br />
-            <a href="https://mall.360.cn/ac/luyouqi?track=ggylyqpj">wifi6路由、游戏加速路由、信号扩展器等更多商品，点击查看>></a>
+            <!-- <span>{{summaryTitle}}</span> -->
+            <!-- <br /> -->
+            <!-- <a :href="shopDetail.summaryUrl">{{shopDetail.summaryTitle}}</a> -->
+            <!-- {{shopDetail.summary}} -->
+            <span>{{ summaryTitle }}</span>
+            <a v-html="shopDetail.summary"></a>
           </div>
           <!-- 价格、促销区域 -->
           <div class="info-wrap">
@@ -58,26 +66,26 @@
               <div class="info-price">
                 <span class="price">价 格</span>
                 <div class="info-price-detail">
-                  <strong class="nowPrice">￥279.00</strong>
-                  <i class="oldPrice">￥379</i>
+                  <strong class="nowPrice">￥{{ shopDetail.priceSale }}</strong>
+                  <i class="oldPrice">￥{{ shopDetail.priceMarket }}</i>
                 </div>
               </div>
               <!-- 促销 -->
               <div class="info-promotion">
                 <span class="promotion">促 销</span>
                 <div class="info-promotion-detail">
-                  <div class="info-box">
+                  <div class="info-box" v-if="priceData.current">
                     <i class="info-box-title">直降</i>
-                    <span>立减100.00元</span>
+                    <span>{{ priceData.current.text }}</span>
                   </div>
-                  <div class="info-box">
+                  <div class="info-box" v-else>
                     <i class="info-box-title">满赠</i>
                     <span>满299送湿巾</span>
                   </div>
                 </div>
               </div>
               <!-- 喇叭 -->
-              <div class="notice-bar">受疫情影响，河北省石家庄市、邢台市，黑龙江省，吉林省，内蒙古，青海，新疆等部分地区暂停发货。</div>
+              <div class="notice-bar" v-if="notice">{{ notice.msg }}</div>
               <!-- 底部分类、数量、加入购物车 -->
               <div class="info-bottom">
                 <div class="inf-bottom-content">
@@ -85,15 +93,37 @@
                   <div class="cate">
                     <div class="cate-label">分 类</div>
                     <ul class="cate-list">
-                      <li class="cate-item">V5X</li>
+                      <li
+                        class="cate-item"
+                        :class="
+                          detailList.itemId === categoryItem.itemId
+                            ? 'active'
+                            : ''
+                        "
+                        v-for="category in categoryList"
+                        :key="category.ctitle"
+                      >
+                        {{ category.ctitle }}
+                      </li>
                     </ul>
                   </div>
                   <!-- 数量 -->
                   <div class="info-count">
                     <div class="cate-label">数 量</div>
                     <div class="info-count-btn">
-                      <div class="reduce" :style="skuNum>=1?'background-color:#F6F6F6':''" @click="handleChange(-1)" >-</div>
-                      <input type="text" v-model="skuNum" ref="inputreadonly" style="outline:none" />
+                      <div
+                        class="reduce"
+                        :style="skuNum >= 1 ? 'background-color:#F6F6F6' : ''"
+                        @click="handleChange(-1)"
+                      >
+                        -
+                      </div>
+                      <input
+                        type="text"
+                        v-model="skuNum"
+                        ref="inputreadonly"
+                        style="outline:none"
+                      />
                       <div class="add" @click="handleChange(1)">+</div>
                     </div>
                   </div>
@@ -103,10 +133,10 @@
                       <a href="javascript:;">立即购买</a>
                     </button>
                     <button class="addCart">
-                      <a href="javascript:;">加入购物车</a>
+                      <a href="javascript:;" @click="addShopCart">加入购物车</a>
                     </button>
-                    <a href="javascript:;" class="icon-btn">
-                      <i class="icon-heart"></i>
+                    <a href="javascript:;" class="icon-btn" @click="addheart">
+                      <i class="icon-heart" :class="isFavo ? 'active' : ''"></i>
                     </a>
                   </div>
                 </div>
@@ -128,7 +158,7 @@
         </a>
       </div>
       <!-- 产品参数 -->
-      <div class="info-tab-wrap">
+      <div class="info-tab-wrap" :class="isShow ? 'show' : ''">
         <div class="info-tab">
           <div class="info-tab-content">
             <!-- 列表 -->
@@ -156,10 +186,18 @@
               </a>
             </div>
             <!-- 二维码 -->
-            <a href="javascript:;" class="info-tab-code">
+            <a
+              href="javascript:;"
+              class="info-tab-code"
+              @mouseenter="showCode"
+              @mouseleave="hideCode"
+            >
               APP购买
-              <div class="code-hover">
-                <img src="https://p4.ssl.qhimg.com/t01912e4fcc88786eca.png" alt />
+              <div class="code-hover" ref="code">
+                <img
+                  src="https://p4.ssl.qhimg.com/t01912e4fcc88786eca.png"
+                  alt
+                />
               </div>
             </a>
           </div>
@@ -184,8 +222,11 @@
           <p>
             <img src="../../static/images/13.png" alt />
           </p>
-          <div style="color:#999;text-align:left;padding:1rem;line-height: 1.6rem;margin-top:20px;">
-            <h3 style="text-align: center;">价格说明</h3>未划线价：
+          <div
+            style="color:#999;text-align:left;padding:1rem;line-height: 1.6rem;margin-top:20px;"
+          >
+            <h3 style="text-align: center;">价格说明</h3>
+            未划线价：
             <br />商品的实时标价，具体成交价格根据商品参加活动或使用优惠券、积分等发生变化，最终以订单结算页价格为准。
             <br />划线价：
             <br />商品展示的划横线价格为参考价，并非原价，该价格可能是品牌专柜标价、商品吊牌价或由品牌供应商提供的正品零售价（如厂商指导价、建议零售价等）或该商品在360商城上曾经展示过的销售价；由于地区、时间的差异性和市场行情波动，品牌专柜标价、商品吊牌价等可能会与您购物时展示的不一致，该价格仅供您参考。
@@ -228,7 +269,10 @@
 
                 <tr>
                   <td class="wd207">传输标准</td>
-                  <td>"IEEE802.11a IEEE802.11b IEEE802.11g IEEE802.11n IEEE802.11ac IEEE802.3 IEEE802.3u IEEE802.3ab"</td>
+                  <td>
+                    "IEEE802.11a IEEE802.11b IEEE802.11g IEEE802.11n
+                    IEEE802.11ac IEEE802.3 IEEE802.3u IEEE802.3ab"
+                  </td>
                 </tr>
 
                 <tr>
@@ -293,7 +337,10 @@
 
                 <tr>
                   <td class="wd207">网络协议</td>
-                  <td>"IEEE802.11a IEEE802.11b IEEE802.11g IEEE802.11n IEEE802.11ac IEEE802.3 IEEE802.3u IEEE802.3ab"</td>
+                  <td>
+                    "IEEE802.11a IEEE802.11b IEEE802.11g IEEE802.11n
+                    IEEE802.11ac IEEE802.3 IEEE802.3u IEEE802.3ab"
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -303,110 +350,111 @@
         <div class="info-common">
           <div class="gTit">常见问题</div>
           <div class="gCon">
-              <dl class="consult">
-                <dt>
-                  <big>1、</big>
-                  <i></i>订单提交成功后还可以修改收货信息吗？
-                </dt>
-                <dd>
-                  <i></i>订单付款之前，您可以进入“我的订单”，在订单详情页内修改收货信息。付款之后将不可修改收货信息。
-                </dd>
-              </dl>
+            <dl class="consult">
+              <dt>
+                <big>1、</big>
+                <i></i>订单提交成功后还可以修改收货信息吗？
+              </dt>
+              <dd>
+                <i></i
+                >订单付款之前，您可以进入“我的订单”，在订单详情页内修改收货信息。付款之后将不可修改收货信息。
+              </dd>
+            </dl>
 
-              <dl class="consult">
-                <dt>
-                  <big>2、</big>
-                  <i></i>支付完成后还能取消订单吗？如何取消？
-                </dt>
-                <dd>
-                  <i></i>支付完成后，配货之前可以取消订单，您可以进入“我的订单”，直接点击订单后面取消按钮。
-                </dd>
-              </dl>
+            <dl class="consult">
+              <dt>
+                <big>2、</big>
+                <i></i>支付完成后还能取消订单吗？如何取消？
+              </dt>
+              <dd>
+                <i></i
+                >支付完成后，配货之前可以取消订单，您可以进入“我的订单”，直接点击订单后面取消按钮。
+              </dd>
+            </dl>
 
-              <dl class="consult">
-                <dt>
-                  <big>3、</big>
-                  <i></i>订单取消后还能恢复吗？
-                </dt>
-                <dd>
-                  <i></i>订单一旦取消将无法恢复，请您慎重操作。
-                </dd>
-              </dl>
+            <dl class="consult">
+              <dt>
+                <big>3、</big>
+                <i></i>订单取消后还能恢复吗？
+              </dt>
+              <dd><i></i>订单一旦取消将无法恢复，请您慎重操作。</dd>
+            </dl>
 
-              <dl class="consult">
-                <dt>
-                  <big>4、</big>
-                  <i></i>订单取消成功后退款如何返还？
-                </dt>
-                <dd>
-                  <i></i>订单取消后，退款会按照您购买时的支付方式原路返回到您的银行卡。
-                </dd>
-              </dl>
+            <dl class="consult">
+              <dt>
+                <big>4、</big>
+                <i></i>订单取消成功后退款如何返还？
+              </dt>
+              <dd>
+                <i></i
+                >订单取消后，退款会按照您购买时的支付方式原路返回到您的银行卡。
+              </dd>
+            </dl>
 
-              <dl class="consult">
-                <dt>
-                  <big>5、</big>
-                  <i></i>对商品不满意可以申请退换货吗？如何操作？
-                </dt>
-                <dd>
-                  <i></i>在确认收货后，7天之内可以申请退货。15天之内可以进行换货，具体操作如下:
-                  <br />退货：进入“我的订单”，在操作区域中点击申请退货，填写问题描述，提交服务单即可申请退货。
-                  <br />换货：请拨打我们的客服热线400-1555-360，在客服的指导下完成换货。
-                </dd>
-              </dl>
+            <dl class="consult">
+              <dt>
+                <big>5、</big>
+                <i></i>对商品不满意可以申请退换货吗？如何操作？
+              </dt>
+              <dd>
+                <i></i
+                >在确认收货后，7天之内可以申请退货。15天之内可以进行换货，具体操作如下:
+                <br />退货：进入“我的订单”，在操作区域中点击申请退货，填写问题描述，提交服务单即可申请退货。
+                <br />换货：请拨打我们的客服热线400-1555-360，在客服的指导下完成换货。
+              </dd>
+            </dl>
 
-              <dl class="consult">
-                <dt>
-                  <big>6、</big>
-                  <i></i>为什么我的订单总是无法提交成功？
-                </dt>
-                <dd>
-                  <i></i>可能存在以下几种情况：
-                  <br />（1）订单信息填写不完整；
-                  <br />（2）订单商品库存不足或者库存无货；
-                  <br />（3）网络延时及以上各种情况都会在页面中弹出提示信息，可以通过修改订单信息（提示信息）或者稍后再试，即可成功提交订单。
-                </dd>
-              </dl>
+            <dl class="consult">
+              <dt>
+                <big>6、</big>
+                <i></i>为什么我的订单总是无法提交成功？
+              </dt>
+              <dd>
+                <i></i>可能存在以下几种情况： <br />（1）订单信息填写不完整；
+                <br />（2）订单商品库存不足或者库存无货；
+                <br />（3）网络延时及以上各种情况都会在页面中弹出提示信息，可以通过修改订单信息（提示信息）或者稍后再试，即可成功提交订单。
+              </dd>
+            </dl>
 
-              <dl class="consult">
-                <dt>
-                  <big>7、</big>
-                  <i></i>订单已提交成功，如何付款？
-                </dt>
-                <dd>
-                  <i></i>您好，360商城目前支持的支付方式分为支付宝和微信。请在订单提交后30分钟内完成付款。
-                </dd>
-              </dl>
+            <dl class="consult">
+              <dt>
+                <big>7、</big>
+                <i></i>订单已提交成功，如何付款？
+              </dt>
+              <dd>
+                <i></i
+                >您好，360商城目前支持的支付方式分为支付宝和微信。请在订单提交后30分钟内完成付款。
+              </dd>
+            </dl>
 
-              <dl class="consult">
-                <dt>
-                  <big>8、</big>
-                  <i></i>订单已支付成功，什么时候可以发货？
-                </dt>
-                <dd>
-                  <i></i>您好，360商城会在48小时内安排发货。物流信息您可进入“我的订单”实时查看。
-                </dd>
-              </dl>
+            <dl class="consult">
+              <dt>
+                <big>8、</big>
+                <i></i>订单已支付成功，什么时候可以发货？
+              </dt>
+              <dd>
+                <i></i
+                >您好，360商城会在48小时内安排发货。物流信息您可进入“我的订单”实时查看。
+              </dd>
+            </dl>
 
-              <dl class="consult">
-                <dt>
-                  <big>9、</big>
-                  <i></i>订单发货后，还可以改送到其他地方吗？
-                </dt>
-                <dd>
-                  <i></i>您好，订单发货后无法修改。请在提交订单前仔细检查核对。
-                </dd>
-              </dl>
+            <dl class="consult">
+              <dt>
+                <big>9、</big>
+                <i></i>订单发货后，还可以改送到其他地方吗？
+              </dt>
+              <dd>
+                <i></i>您好，订单发货后无法修改。请在提交订单前仔细检查核对。
+              </dd>
+            </dl>
 
-              <dl class="consult">
-                <dt>
-                  <big>10、</big>
-                  <i></i>我的地址比较偏僻，你们能送到吗？
-                </dt>
-                <dd>
-                  <i></i>EMS能够到达的区域我们都提供配送服务。
-                </dd>
-              </dl>
+            <dl class="consult">
+              <dt>
+                <big>10、</big>
+                <i></i>我的地址比较偏僻，你们能送到吗？
+              </dt>
+              <dd><i></i>EMS能够到达的区域我们都提供配送服务。</dd>
+            </dl>
           </div>
         </div>
       </div>
@@ -415,54 +463,149 @@
   </div>
 </template>
 <script>
-import ImageList from './ImageList'
+import ImageList from "./ImageList";
+import { mapState } from "vuex";
 export default {
   name: "Shop",
-  components:{
+  components: {
     ImageList
   },
-  data(){
+  data() {
     return {
-      skuNum: 1
-    }
+      skuNum: 1,
+      shopDetail: {},
+      summaryTitle: "",
+      currentIndex: 0,
+      priceData: {},
+      notice: "",
+      categoryList: [],
+      detailList: {},
+      categoryItem: {},
+      isFavo: 0,
+      isShow: false,
+      itemId: null
+    };
   },
-  methods:{
+  async mounted() {
+    // 获取商品详情数据
+    let { itemId } = this.$route.query;
+    this.itemId = itemId;
+    let result = await this.$API.reqShopDetail(itemId);
+    // console.log(result)
+    let detailList = result.data.data;
+    // console.log(detailList);
+    this.detailList = detailList;
+    // 获取商品信息数据
+    let shopDetail = await detailList.itemInfo;
+    // console.log(data)
+    this.shopDetail = shopDetail;
+    // console.log(this.shopDetail)
+    let summaryTitle = this.shopDetail.summary.split("<")[0];
+    this.summaryTitle = summaryTitle;
+    // 获取商品价格、优惠数据
+    let priceData = detailList.promotion;
+    // console.log(priceData,priceData.current.tag)
+    this.priceData = priceData;
+    // 获取通知消息数据
+    let notice = detailList.notice;
+    this.notice = notice;
+    // 获取商品分类数据
+    let categoryList = await detailList.subItems;
+    this.categoryList = categoryList;
+    // detailList.itemId===categoryList.itemId
+    // 当前商品itemId是否跟点击商品itemId相同
+    let categoryItem = this.categoryList.find(item => {
+      return item.itemId === this.detailList.itemId;
+    });
+    // console.log(categoryItem)
+    // let categoryItemId = categoryItem.itemId
+    this.categoryItem = categoryItem;
+
+    let { isFavo } = detailList;
+    this.isFavo = isFavo;
+    // 监听系统滚动条高度
+    document.addEventListener("scroll", () => {
+      let scrollTop = document.documentElement.scrollTop;
+      // console.log(scrollTop);
+      if (scrollTop > 1384) {
+        this.isShow = true;
+      } else {
+        this.isShow = false;
+      }
+    });
+  },
+  computed: {
+    ...mapState({
+      userInfo: state => state.userInfo
+    })
+  },
+  methods: {
     // 放大镜功能
-    handleMove(e){
+    handleMove(e) {
       // console.log(e,this)
-       // 获取遮挡层对象
-      const zoom = this.$refs.zoom
+      // 获取遮挡层对象
+      const zoom = this.$refs.zoom;
       // 获取大图对象
-      const bigImg = this.$refs.bigImg
+      const bigImg = this.$refs.bigImg;
       // 获取鼠标的位置
-      let {offsetX,offsetY} = e
+      let { offsetX, offsetY } = e;
       // 获取遮挡蹭对象的宽度
-      const zoomWidth = zoom.clientWidth / 2
+      const zoomWidth = zoom.clientWidth / 2;
       // 设置鼠标在遮挡层对象的中心
-      let left = offsetX - zoomWidth / 2
-      let top = offsetY - zoomWidth / 2
+      let left = offsetX - zoomWidth / 2;
+      let top = offsetY - zoomWidth / 2;
       // 限制边界
-      const Magnifier = this.$refs.Magnifier
-      const magnifierWidth = Magnifier . clientWidth
+      const Magnifier = this.$refs.Magnifier;
+      const magnifierWidth = Magnifier.clientWidth;
       // console.log(magnifierWidth)
-      let overWidth = magnifierWidth - zoomWidth * 2
+      let overWidth = magnifierWidth - zoomWidth * 2;
       // console.log(overWidth)
-      left = left < 0 ? 0 : left > overWidth ? overWidth : left
-      top = top < 0 ? 0 : top > overWidth ? overWidth : top
+      left = left < 0 ? 0 : left > overWidth ? overWidth : left;
+      top = top < 0 ? 0 : top > overWidth ? overWidth : top;
       // 设置遮挡层坐标
-      zoom.style.left = left + 'px'
-      zoom.style.top = top + 'px'
+      zoom.style.left = left + "px";
+      zoom.style.top = top + "px";
 
       // 设置大图显示
-      bigImg.style.left = - left * 2 + 'px'
-      bigImg.style.top = - top * 2+ 'px'
-
+      if (bigImg) {
+        bigImg.style.left = -left * 2 + "px";
+        bigImg.style.top = -top * 2 + "px";
+      }
     },
     // 数量操作
-    handleChange(skuNum){
-      this.skuNum += skuNum
-      if(this.skuNum <= 1){
-        this.skuNum = 1
+    handleChange(skuNum) {
+      this.skuNum += skuNum;
+      if (this.skuNum <= 1) {
+        this.skuNum = 1;
+      }
+    },
+    // 改变下标
+    changeCurrentIndex(index) {
+      this.currentIndex = index;
+    },
+    // 显示二维码
+    showCode() {
+      this.$refs.code.className = "active code-hover";
+    },
+    // 隐藏二维码
+    hideCode() {
+      this.$refs.code.className = "code-hover";
+    },
+    // 添加心愿单
+    addheart() {
+      this.isFavo = !this.isFavo;
+      // console.log(this.detailList)
+    },
+    //加入购物车
+    async addShopCart() {
+      if (!this.userInfo) {
+        this.$bus.$emit("showLogin");
+        this.$message.error("请先登录");
+      }
+      const res = await this.$API.reqAddShopCart(this.itemId);
+      console.log(res);
+      if (res.data.errmsg == "添加购物车成功") {
+        this.$message.success("添加购物车成功");
       }
     }
   }
@@ -489,12 +632,16 @@ export default {
         height: 480px;
         margin: 0 auto;
         position: relative;
-        border:1px solid transparent;
-        &:hover~{
-          border:1px solid #999;
+        border: 1px solid transparent;
+        &:hover ~ {
+          border: 1px solid #999;
         }
-        .smallImg{
-          width:100%;
+        .smallImg {
+          width: 100%;
+          video {
+            width: 100%;
+            height: 100%;
+          }
         }
         .zoom {
           width: 300px;
@@ -504,17 +651,18 @@ export default {
           left: 0;
           background: yellow;
           opacity: 0.4;
-          display:none;
+          display: none;
         }
-        .event{
+        .event {
           width: 100%;
           height: 100%;
           position: absolute;
           top: 0;
           left: 0;
           z-index: 998;
-          &:hover~.zoom,&:hover~.bigImg{
-            display:block;
+          &:hover ~ .zoom,
+          &:hover ~ .bigImg {
+            display: block;
           }
         }
         .bigImg {
@@ -525,9 +673,10 @@ export default {
           position: absolute;
           top: 0;
           left: 490px;
-          border:1px solid #999;
+          border: 1px solid #999;
           overflow: hidden;
-           img {
+          background: white;
+          img {
             width: 900px;
             max-width: 900px;
             height: 960px;
@@ -616,6 +765,7 @@ export default {
       font-size: 14px;
       padding-top: 12px;
       float: right;
+      width: 678px;
       .product-info {
         .info-title {
           font-size: 18px;
@@ -721,24 +871,32 @@ export default {
                 .cate {
                   line-height: 24px;
                   padding: 0 20px 16px 15px;
+                  // border: 1px solid red;
+                  display: flex;
+                  // display: inline-block;
                   .cate-label {
                     width: 45px;
-                    // border: 1px solid pink;
-                    display: inline-block;
                     text-align: center;
+                    // overflow: hidden;
                   }
                   .cate-list {
                     list-style-type: none;
-                    display: inline-block;
                     margin-left: 10px;
+                    display: inline-block;
+                    display: flex;
+                    flex-flow: wrap;
                     .cate-item {
                       height: 26px;
-                      border: 1px solid #f33;
+                      border: 1px solid #ddd;
                       padding: 0 20px;
-                      background: #ffebe9;
                       color: #333;
                       border-radius: 4px;
                       cursor: pointer;
+                      margin: 0 5px 10px;
+                      &.active {
+                        border: 1px solid #f33;
+                        background: #ffebe9;
+                      }
                     }
                   }
                 }
@@ -801,6 +959,9 @@ export default {
                     a {
                       color: #f33;
                       text-decoration: none;
+                      &:hover {
+                        color: #f33 !important;
+                      }
                     }
                   }
                   .addCart {
@@ -809,6 +970,9 @@ export default {
                     a {
                       color: #fff;
                       text-decoration: none;
+                      &:hover {
+                        color: #fff !important;
+                      }
                     }
                   }
                   // 添加心愿
@@ -826,11 +990,13 @@ export default {
                       display: inline-block;
                       background-image: url(https://p.ssl.qhimg.com/t0141ce2282c77fd367.png);
                       background-position: 0 -56px;
-                      // background-position: 0 -84px;
                       background-repeat: no-repeat;
                       height: 18px;
                       width: 22px;
                       vertical-align: middle;
+                      &.active {
+                        background-position: 0 -84px;
+                      }
                     }
                   }
                 }
@@ -859,6 +1025,13 @@ export default {
     // 产品参数
     .info-tab-wrap {
       height: 50px;
+      position: relative;
+      &.show {
+        position: fixed;
+        top: 40px;
+        right: 557px;
+      }
+      // top: 50px;
       .info-tab {
         line-height: 36px;
         .info-tab-content {
@@ -868,7 +1041,7 @@ export default {
           margin: 0 auto;
           padding: 7px 0;
           display: flex;
-          position: relative;
+          width: 1000px;
           // 参数列表
           .info-tab-list {
             .info-tab-item {
@@ -877,19 +1050,19 @@ export default {
               line-height: 14px;
               padding: 0 30px;
               text-decoration: none;
-              color: #666;
+              color: #666 !important;
               &:hover {
-                color: #333;
+                color: #333 !important;
               }
             }
             .info-tab-lastInner {
               border: 0;
             }
             .info-tab-item.on {
-               color: #333;
-              .active{
-                border-bottom: 5px solid #F33;
-                opacity:0.6
+              color: #333 !important;
+              .active {
+                border-bottom: 5px solid #f33;
+                // opacity:0.6
               }
             }
           }
@@ -911,6 +1084,9 @@ export default {
               a {
                 color: #f33;
                 text-decoration: none;
+                &:hover {
+                  color: #f33 !important;
+                }
               }
             }
             .addCart {
@@ -919,6 +1095,9 @@ export default {
               a {
                 color: #fff;
                 text-decoration: none;
+                &:hover {
+                  color: #fff !important;
+                }
               }
             }
           }
@@ -934,6 +1113,9 @@ export default {
             padding-right: 55px;
             background: url(https://p.ssl.qhimg.com/t010f96e0652b822fea.png)
               center right no-repeat;
+            &:hover {
+              color: black !important;
+            }
             .code-hover {
               left: auto;
               margin-top: 0;
@@ -945,6 +1127,10 @@ export default {
               top: 100%;
               padding: 15px 10px 0;
               display: none;
+              &.active {
+                display: block;
+                transition: all 0.2s;
+              }
               img {
                 width: 110px;
               }
@@ -1025,26 +1211,27 @@ export default {
         margin-top: -1px;
         padding: 0 30px;
       }
-      .gCon{
+      .gCon {
         padding: 20px 60px;
         background: #fff;
         margin: 0 auto;
         text-align: center;
-        .consult{
+        .consult {
           font-size: 13px;
           text-align: left;
-          dt{
+          dt {
             color: #333;
             display: block;
             line-height: 30px;
             margin-bottom: 15px;
-            big{
+            big {
               display: inline-block;
               font-size: 18px;
               width: 35px;
             }
-            i{
-              background: url(//p.ssl.qhmsg.com/t0147bb66948b7f6357.png) left top no-repeat;
+            i {
+              background: url(//p.ssl.qhmsg.com/t0147bb66948b7f6357.png) left
+                top no-repeat;
               display: inline-block;
               height: 30px;
               margin-right: 5px;
@@ -1052,12 +1239,12 @@ export default {
               width: 35px;
             }
           }
-          dd{
-            background-position:0 45px ;
+          dd {
+            background-position: 0 45px;
             color: #666;
             margin-bottom: 20px;
             padding: 0 0 15px 35px;
-            i{
+            i {
               background-position: 0 -45px;
             }
           }

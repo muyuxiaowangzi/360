@@ -14,69 +14,77 @@
             <span><router-link to="/myIfo">崔旺</router-link></span>
             <!-- <span> 注册</span> -->
             <!-- 登录 -->
-            <el-button type="text" @click="dialogFormVisible = true"
-              >登录</el-button
-            >
-            <el-dialog
-              title="登录"
-              :visible.sync="dialogFormVisible"
-              :append-to-body="true"
-              custom-class="dialog"
-            >
-              <el-form :model="form">
-                <el-form-item :label-width="formLabelWidth">
-                  <el-input
-                    placeholder="手机号/用户名/邮箱"
-                    v-model="form.username"
-                    autocomplete="off"
-                  ></el-input>
-                </el-form-item>
-                <el-form-item :label-width="formLabelWidth">
-                  <el-input
-                    placeholder="密码"
-                    v-model="form.password"
-                    autocomplete="off"
-                  ></el-input>
-                </el-form-item>
-                <el-button type="primary" @click="submitLogin">登录</el-button>
-              </el-form>
-            </el-dialog>
+            <span v-if="!userInfo.username && !userInfoList.username">
+              <el-button type="text" @click="dialogFormVisible = true"
+                >登录</el-button
+              >
+              <el-dialog
+                title="登录"
+                :visible.sync="dialogFormVisible"
+                :append-to-body="true"
+                custom-class="dialog"
+              >
+                <el-form :model="form">
+                  <el-form-item :label-width="formLabelWidth">
+                    <el-input
+                      placeholder="手机号/用户名/邮箱"
+                      v-model="form.username"
+                      autocomplete="off"
+                    ></el-input>
+                  </el-form-item>
+                  <el-form-item :label-width="formLabelWidth">
+                    <el-input
+                      placeholder="密码"
+                      v-model="form.password"
+                      autocomplete="off"
+                    ></el-input>
+                  </el-form-item>
+                  <el-button type="primary" @click="submitLogin"
+                    >登录</el-button
+                  >
+                </el-form>
+              </el-dialog>
 
-            <el-button type="text" @click="dialogFormRegister = true"
-              >注册</el-button
-            >
-            <el-dialog
-              title="手机号注册"
-              :visible.sync="dialogFormRegister"
-              :append-to-body="true"
-              custom-class="dialog"
-            >
-              <el-form :model="formRegister">
-                <el-form-item :label-width="formLabelWidth">
-                  <el-input
-                    placeholder="手机号"
-                    v-model="formRegister.username"
-                    autocomplete="off"
-                  ></el-input>
-                </el-form-item>
-                <el-form-item :label-width="formLabelWidth">
-                  <el-input
-                    placeholder="密码"
-                    v-model="formRegister.password"
-                    autocomplete="off"
-                  ></el-input>
-                </el-form-item>
-                <el-button type="primary" @click="submitRegister"
-                  >注册</el-button
-                >
-              </el-form>
-            </el-dialog>
+              <el-button type="text" @click="dialogFormRegister = true"
+                >注册</el-button
+              >
+              <el-dialog
+                title="手机号注册"
+                :visible.sync="dialogFormRegister"
+                :append-to-body="true"
+                custom-class="dialog"
+              >
+                <el-form :model="formRegister">
+                  <el-form-item :label-width="formLabelWidth">
+                    <el-input
+                      placeholder="手机号"
+                      v-model="formRegister.username"
+                      autocomplete="off"
+                    ></el-input>
+                  </el-form-item>
+                  <el-form-item :label-width="formLabelWidth">
+                    <el-input
+                      placeholder="密码"
+                      v-model="formRegister.password"
+                      autocomplete="off"
+                    ></el-input>
+                  </el-form-item>
+                  <el-button type="primary" @click="submitRegister"
+                    >注册</el-button
+                  >
+                </el-form>
+              </el-dialog>
+            </span>
+
+            <span v-else>{{ userInfoList.username }}</span>
             <span><router-link to="/order">订单结算</router-link></span>
             <span><router-link to="/shop">商品详情</router-link></span>
             <span
-              ><router-link to="/shopping"
-                ><img src="./image/shop.jpg"/></router-link
-            ></span>
+              ><img
+                src="./image/shop.jpg"
+                alt=""
+                @click="$router.push('/shopCart')"
+            /></span>
           </div>
         </div>
       </div>

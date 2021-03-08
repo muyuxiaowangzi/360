@@ -3,16 +3,20 @@ import App from "./App.vue";
 import router from "./router";
 import store from "./store";
 import Pagination from "./components/pagination";
+import TypeNav from "./components/TypeNav";
 // 使用element-ui
-import "./plugins/swiper";
 import ElementUI from "element-ui";
 import "element-ui/lib/theme-chalk/index.css";
-Vue.config.productionTip = false;
+import "./plugins/swiper";
 import * as API from "./api/index.js";
-Vue.prototype.$API = API;
+// import "@/styles/index.scss"; // global css
 Vue.use(ElementUI);
+Vue.config.productionTip = false;
+Vue.prototype.$API = API;
+Vue.prototype.$bus = new Vue();
 // 变为全局组件
 Vue.component("Pagination", Pagination);
+Vue.component("TypeNav", TypeNav);
 new Vue({
   beforeCreate() {
     Vue.prototype.$bus = new Vue();

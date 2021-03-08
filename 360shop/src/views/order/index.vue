@@ -245,59 +245,59 @@
 </template>
 <script>
 export default {
-  name: 'index',
+  name: "Order",
   data() {
     return {
       isShowClo: true,
       dialogFormVisible: false,
-      textarea2: '',
-      input: '',
-      checked: '',
+      textarea2: "",
+      input: "",
+      checked: "",
       form: {
-        name: '',
-        region: '',
-        date1: '',
-        date2: '',
+        name: "",
+        region: "",
+        date1: "",
+        date2: "",
         delivery: false,
         type: [],
-        resource: '',
-        desc: '',
+        resource: "",
+        desc: ""
       },
-      formLabelWidth: '120px',
+      formLabelWidth: "120px",
       rules: {
         name: [
-          { required: true, message: '请输入活动名称', trigger: 'blur' },
-          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' },
-        ],
-      },
-    }
+          { required: true, message: "请输入活动名称", trigger: "blur" },
+          { min: 3, max: 5, message: "长度在 3 到 5 个字符", trigger: "blur" }
+        ]
+      }
+    };
   },
   methods: {
     handleClose() {
-      this.$refs.ruleForm.resetFields()
+      this.$refs.ruleForm.resetFields();
       this.form = {
-        name: '',
-        region: '',
-        date1: '',
-        date2: '',
+        name: "",
+        region: "",
+        date1: "",
+        date2: "",
         delivery: false,
         type: [],
-        resource: '',
-        desc: '',
-      }
+        resource: "",
+        desc: ""
+      };
     },
     handleSave() {
-      this.$refs.ruleForm.validate((valid) => {
+      this.$refs.ruleForm.validate(valid => {
         if (valid) {
-          console.log('输入正确')
-          this.dialogFormVisible = false
+          console.log("输入正确");
+          this.dialogFormVisible = false;
         } else {
-          console.log('输入错误')
+          console.log("输入错误");
         }
-      })
-    },
-  },
-}
+      });
+    }
+  }
+};
 </script>
 <style lang="less" scoped>
 .main {
@@ -494,7 +494,7 @@ export default {
       }
       input {
         background-repeat: no-repeat;
-        content: '';
+        content: "";
         display: inline-block;
         height: 13px;
         position: relative;

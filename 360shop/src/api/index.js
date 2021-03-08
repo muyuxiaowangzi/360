@@ -19,3 +19,17 @@ export const reqLogin = (username, password) =>
 //注册
 export const reqRegister = (username, password) =>
   loginAjax.post("/register", { username, password });
+
+//获取购物车
+export const reqShopCart = () => ajax.post(`/shop/getshopcart`);
+
+//加入购物车
+export const reqAddShopCart = (item_id, num = 1) =>
+  ajax.post(`/cart/addtocart?item_id=${item_id}&num=${num}`);
+
+//获取商品详情
+export const reqShopDetail = (itemId, rewardType = "point") =>
+  ajax.get(`/itemDetail/itemInfo?itemId=${itemId}&rewardType=${rewardType}`);
+
+//获取用户详情
+export const reqUserInfo = () => loginAjax.get("/getUserInfo");
