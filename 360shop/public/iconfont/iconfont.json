@@ -11,6 +11,23 @@
       "font_class": "sousuo",
       "unicode": "e616",
       "unicode_decimal": 58902
+<<<<<<< HEAD
+=======
+    },
+    {
+      "icon_id": "14112862",
+      "name": "上",
+      "font_class": "shang",
+      "unicode": "e641",
+      "unicode_decimal": 58945
+    },
+    {
+      "icon_id": "16853967",
+      "name": "下",
+      "font_class": "xia",
+      "unicode": "e681",
+      "unicode_decimal": 59009
+>>>>>>> 2dc4ce6887a976ff0f508888b74243ef3a4bf5bc
     }
   ]
 }

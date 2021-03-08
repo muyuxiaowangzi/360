@@ -13,6 +13,10 @@
         href="javascript:;"
         v-for="item in floors[0].data.list"
         :key="item.itemId"
+<<<<<<< HEAD
+=======
+        @click="toShopDetail(item.itemId)"
+>>>>>>> 2dc4ce6887a976ff0f508888b74243ef3a4bf5bc
       >
         <img :src="item.pic" alt="" />
         <p class="p_top">{{ item.title }}</p>
@@ -30,7 +34,17 @@
 <script>
 export default {
   name: "Floor",
+<<<<<<< HEAD
   props: ["floors"]
+=======
+  props: ["floors"],
+  methods: {
+    //前往商品详情
+    async toShopDetail(itemId) {
+      this.$router.push({ path: "/shop", query: { itemId } });
+    }
+  }
+>>>>>>> 2dc4ce6887a976ff0f508888b74243ef3a4bf5bc
 };
 </script>
 <style scoped>

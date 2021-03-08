@@ -1,13 +1,26 @@
 <template>
   <div class="container">
     <div class="container_top">
+<<<<<<< HEAD
       <div class="testNav" @mouseleave="noEnterClick">
+=======
+      <!-- <div class="testNav" @mouseleave="noEnterClick">
+>>>>>>> 2dc4ce6887a976ff0f508888b74243ef3a4bf5bc
         <div class="typeNav">
           <div class="typeNav_top">
             <a class="iconfont icon-fenlei" href="javascript:;">全部...</a>
           </div>
           <ul class="typeNav_list">
             <li
+<<<<<<< HEAD
+=======
+              @mouseenter="enterClick(-1)"
+              :class="enterIndex === -1 ? 'active_li' : ''"
+            >
+              <a href="javascript:;">手机</a>
+            </li>
+            <li
+>>>>>>> 2dc4ce6887a976ff0f508888b74243ef3a4bf5bc
               v-for="(nav, index) in typeNavInfo.category"
               :key="nav.id"
               @mouseenter="enterClick(index, nav.id)"
@@ -17,7 +30,36 @@
             </li>
           </ul>
         </div>
+<<<<<<< HEAD
         <div class="typeNav_right" :class="isShowRight ? 'showRight' : ''">
+=======
+        <div
+          class="typeNav_right"
+          :class="isShowRight ? 'showRight' : ''"
+          v-if="enterIndex === -1"
+        >
+          <div class="typeNav_cen">
+            <div class="type_list">
+              <a href="javascript:;" class="typeList_title">手机</a>
+              <div class="typeList_item">
+                <a href="javascript:;">
+                  <img src="./images/iphone.jpg" alt="" />
+                  <strong>苹果手机</strong>
+                </a>
+                <a href="javascript:;">
+                  <img src="./images/mi.jpg" alt="" />
+                  <strong>小米手机</strong>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="typeNav_right"
+          :class="isShowRight ? 'showRight' : ''"
+          v-else
+        >
+>>>>>>> 2dc4ce6887a976ff0f508888b74243ef3a4bf5bc
           <div class="typeNav_cen">
             <div
               class="type_list"
@@ -40,7 +82,12 @@
         </div>
         <div class="swiper-button-prev" slot="button-prev"></div>
         <div class="swiper-button-next" slot="button-next"></div>
+<<<<<<< HEAD
       </div>
+=======
+      </div> -->
+      <TypeNav />
+>>>>>>> 2dc4ce6887a976ff0f508888b74243ef3a4bf5bc
     </div>
     <div class="top_swiper">
       <swiper
@@ -215,6 +262,7 @@ export default {
   name: "Home",
   data() {
     return {
+<<<<<<< HEAD
       isShowRight: false,
       //分类数据
       typeNavInfo: {},
@@ -224,11 +272,23 @@ export default {
       categoryInfo: {},
       //保存上一次请求的分类id
       preId: null,
+=======
+      /* isShowRight: false,
+      //分类数据
+      typeNavInfo: {},
+      //分类移入是否显示样式,数组下标
+      enterIndex: -2,
+      //相关分类详细数据
+      categoryInfo: {},
+      //保存上一次请求的分类id
+      preId: null, */
+>>>>>>> 2dc4ce6887a976ff0f508888b74243ef3a4bf5bc
       //首页相关数据
       IndexContainer: {}
     };
   },
   async mounted() {
+<<<<<<< HEAD
     //获取分类数据
     const result = await this.$API.reqPrimaryCategory();
     this.typeNavInfo = result.data.data;
@@ -236,12 +296,25 @@ export default {
 
     const resIndexContainer = await this.$API.reqIndexContainer();
     console.log(resIndexContainer);
+=======
+    /* //获取分类数据
+    const result = await this.$API.reqPrimaryCategory();
+    this.typeNavInfo = result.data.data; */
+    // console.log(result);
+
+    const resIndexContainer = await this.$API.reqIndexContainer();
+    // console.log(resIndexContainer);
+>>>>>>> 2dc4ce6887a976ff0f508888b74243ef3a4bf5bc
     //保存banner图数据
     this.IndexContainer = resIndexContainer.data.data;
   },
   methods: {
     //分类移入事件
+<<<<<<< HEAD
     async enterClick(index, id) {
+=======
+    /* async enterClick(index, id) {
+>>>>>>> 2dc4ce6887a976ff0f508888b74243ef3a4bf5bc
       //改变下标，切换选中状态
       this.enterIndex = index;
       //右边是否显示
@@ -259,8 +332,13 @@ export default {
     noEnterClick() {
       this.isShowRight = false;
       //改变下标，切换选中状态
+<<<<<<< HEAD
       this.enterIndex = -1;
     }
+=======
+      this.enterIndex = -2;
+    } */
+>>>>>>> 2dc4ce6887a976ff0f508888b74243ef3a4bf5bc
   },
   computed: {
     //banner图数据
