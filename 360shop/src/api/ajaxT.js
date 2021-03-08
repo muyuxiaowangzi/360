@@ -8,7 +8,7 @@ import "nprogress/nprogress.css";
 // 设置请求的超时时间和根路径
 const ajax = axios.create({
   // 设置根路径
-  baseURL: "/ap",
+  baseURL: "/aaa",
   // 设置请求1的超时时间
   timeOut: 20000
 });

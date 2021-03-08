@@ -1,6 +1,6 @@
 {
-  "id": "2289069",
-  "name": "123",
+  "id": "",
+  "name": "",
   "font_family": "iconfont",
   "css_prefix_text": "icon-",
   "description": "",
@@ -11,6 +11,20 @@
       "font_class": "sousuo",
       "unicode": "e616",
       "unicode_decimal": 58902
+    },
+    {
+      "icon_id": "14112862",
+      "name": "上",
+      "font_class": "shang",
+      "unicode": "e641",
+      "unicode_decimal": 58945
+    },
+    {
+      "icon_id": "16853967",
+      "name": "下",
+      "font_class": "xia",
+      "unicode": "e681",
+      "unicode_decimal": 59009
     }
   ]
 }

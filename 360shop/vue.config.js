@@ -1,12 +1,28 @@
 module.exports = {
   devServer: {
     proxy: {
-      "/api": {
+      "/aaa": {
+        target: "https://shopping.ceair.com",
+        ws: true,
+        changeOrigin: true,
+        pathRewrite: {
+          "^/aaa": ""
+        }
+      },
+      "/ap": {
         target: "https://mall.360.cn",
         ws: true,
         changeOrigin: true,
         pathRewrite: {
-          "^/api": ""
+          "^/ap": ""
+        }
+      },
+      "/login": {
+        target: "http://192.168.19.62:8088",
+        ws: true,
+        changeOrigin: true,
+        pathRewrite: {
+          "^/login": ""
         }
       }
     }

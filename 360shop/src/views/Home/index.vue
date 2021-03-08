@@ -8,6 +8,12 @@
           </div>
           <ul class="typeNav_list">
             <li
+              @mouseenter="enterClick(-1)"
+              :class="enterIndex === -1 ? 'active_li' : ''"
+            >
+              <a href="javascript:;">手机</a>
+            </li>
+            <li
               v-for="(nav, index) in typeNavInfo.category"
               :key="nav.id"
               @mouseenter="enterClick(index, nav.id)"
@@ -17,7 +23,32 @@
             </li>
           </ul>
         </div>
-        <div class="typeNav_right" :class="isShowRight ? 'showRight' : ''">
+        <div
+          class="typeNav_right"
+          :class="isShowRight ? 'showRight' : ''"
+          v-if="enterIndex === -1"
+        >
+          <div class="typeNav_cen">
+            <div class="type_list">
+              <a href="javascript:;" class="typeList_title">手机</a>
+              <div class="typeList_item">
+                <a href="javascript:;" @click="searchIphone(1)">
+                  <img src="./images/iphone.jpg" alt="" />
+                  <strong>苹果手机</strong>
+                </a>
+                <a href="javascript:;" @click="searchIphone(0)">
+                  <img src="./images/mi.jpg" alt="" />
+                  <strong>小米手机</strong>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="typeNav_right"
+          :class="isShowRight ? 'showRight' : ''"
+          v-else
+        >
           <div class="typeNav_cen">
             <div
               class="type_list"
@@ -51,15 +82,15 @@
           loop: true, // 循环模式选项
           // 如果需要分页器
           pagination: {
-            el: '.swiper-pagination'
+            el: '.swiper-pagination',
           },
           autoplay: true,
           effect: 'fade',
           // 如果需要前进后退按钮
           navigation: {
             nextEl: '.swiper-button-next',
-            prevEl: '.swiper-button-prev'
-          }
+            prevEl: '.swiper-button-prev',
+          },
         }"
       >
         <swiper-slide
@@ -210,92 +241,105 @@
   </div>
 </template>
 <script>
-import Floor from "./components/Floor/Floor";
+import Floor from './components/Floor/Floor'
 export default {
-  name: "Home",
+  name: 'Home',
   data() {
     return {
       isShowRight: false,
       //分类数据
       typeNavInfo: {},
       //分类移入是否显示样式,数组下标
-      enterIndex: -1,
+      enterIndex: -2,
       //相关分类详细数据
       categoryInfo: {},
       //保存上一次请求的分类id
       preId: null,
       //首页相关数据
-      IndexContainer: {}
-    };
+      IndexContainer: {},
+    }
   },
   async mounted() {
     //获取分类数据
-    const result = await this.$API.reqPrimaryCategory();
-    this.typeNavInfo = result.data.data;
+    const result = await this.$API.reqPrimaryCategory()
+    this.typeNavInfo = result.data.data
     // console.log(result);
 
-    const resIndexContainer = await this.$API.reqIndexContainer();
-    console.log(resIndexContainer);
+    const resIndexContainer = await this.$API.reqIndexContainer()
+    console.log(resIndexContainer)
     //保存banner图数据
-    this.IndexContainer = resIndexContainer.data.data;
+    this.IndexContainer = resIndexContainer.data.data
   },
   methods: {
     //分类移入事件
     async enterClick(index, id) {
       //改变下标，切换选中状态
-      this.enterIndex = index;
+      this.enterIndex = index
       //右边是否显示
-      this.isShowRight = true;
+      this.isShowRight = true
       // 判断是否还是移入的前一个
-      if (id === this.preId) return;
+      if (id === this.preId) return
       //根据分类id获取分类详细数据
       const result = await this.$API.reqSecondaryCategory(
         this.typeNavInfo.type,
         id
-      );
-      this.categoryInfo = result.data.data;
-      this.preId = id;
+      )
+      this.categoryInfo = result.data.data
+      this.preId = id
     },
     noEnterClick() {
-      this.isShowRight = false;
+      this.isShowRight = false
       //改变下标，切换选中状态
-      this.enterIndex = -1;
-    }
+      this.enterIndex = -2
+    },
+    searchIphone(id) {
+      if (id) {
+        this.$router.push({
+          path: '/search',
+          query: { brand_id: 14, category3_id: 166 },
+        })
+      } else {
+        this.$router.push({
+          path: '/search',
+          query: { brand_id: 309, category3_id: 166 },
+        })
+      }
+    },
   },
   computed: {
     //banner图数据
     bannerList() {
-      const { frames } = this.IndexContainer;
+      const { frames } = this.IndexContainer
       if (frames) {
-        return frames.banner.list;
+        return frames.banner.list
       }
-      return [];
+      return []
     },
     //floor数据
     floorList() {
-      const { floors } = this.IndexContainer;
+      const { floors } = this.IndexContainer
       if (floors) {
-        const arr = floors.slice(6, 18);
+        const arr = floors.slice(6, 18)
         // let num = 0
-        let nowArr = [];
-        let lastArr = [];
+        let nowArr = []
+        let lastArr = []
         return arr.reduce((newArr, item, index) => {
-          nowArr.push(item);
+          nowArr.push(item)
           if (index % 2 != 0) {
-            lastArr.push(nowArr);
-            nowArr = [];
-            return lastArr;
+            lastArr.push(nowArr)
+            nowArr = []
+            return lastArr
           }
-          return newArr;
-        }, []);
+          return newArr
+        }, [])
       }
-      return [];
-    }
+      return []
+    },
   },
   components: {
-    Floor
-  }
-};
+    Floor,
+  },
+}
 </script>
 <style>
 .container {

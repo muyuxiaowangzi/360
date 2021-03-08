@@ -12,10 +12,71 @@
           </div>
           <div class="top-right">
             <span><router-link to="/myIfo">崔旺</router-link></span>
-            <span> 注册</span>
+            <!-- <span> 注册</span> -->
+            <!-- 登录 -->
+            <el-button type="text" @click="dialogFormVisible = true"
+              >登录</el-button
+            >
+            <el-dialog
+              title="登录"
+              :visible.sync="dialogFormVisible"
+              :append-to-body="true"
+              custom-class="dialog"
+            >
+              <el-form :model="form">
+                <el-form-item :label-width="formLabelWidth">
+                  <el-input
+                    placeholder="手机号/用户名/邮箱"
+                    v-model="form.username"
+                    autocomplete="off"
+                  ></el-input>
+                </el-form-item>
+                <el-form-item :label-width="formLabelWidth">
+                  <el-input
+                    placeholder="密码"
+                    v-model="form.password"
+                    autocomplete="off"
+                  ></el-input>
+                </el-form-item>
+                <el-button type="primary" @click="submitLogin">登录</el-button>
+              </el-form>
+            </el-dialog>
+
+            <el-button type="text" @click="dialogFormRegister = true"
+              >注册</el-button
+            >
+            <el-dialog
+              title="手机号注册"
+              :visible.sync="dialogFormRegister"
+              :append-to-body="true"
+              custom-class="dialog"
+            >
+              <el-form :model="formRegister">
+                <el-form-item :label-width="formLabelWidth">
+                  <el-input
+                    placeholder="手机号"
+                    v-model="formRegister.username"
+                    autocomplete="off"
+                  ></el-input>
+                </el-form-item>
+                <el-form-item :label-width="formLabelWidth">
+                  <el-input
+                    placeholder="密码"
+                    v-model="formRegister.password"
+                    autocomplete="off"
+                  ></el-input>
+                </el-form-item>
+                <el-button type="primary" @click="submitRegister"
+                  >注册</el-button
+                >
+              </el-form>
+            </el-dialog>
             <span><router-link to="/order">订单结算</router-link></span>
             <span><router-link to="/shop">商品详情</router-link></span>
-            <span><img src="./image/shop.jpg" alt=""/></span>
+            <span
+              ><router-link to="/shopping"
+                ><img src="./image/shop.jpg"/></router-link
+            ></span>
           </div>
         </div>
       </div>
@@ -28,15 +89,27 @@
                   src="https://p.ssl.qhimg.com/t0102789b8d00c3dfce.png"
                   alt=""
               /></router-link>
+              <span
+                v-if="$route.meta.isshow"
+                style="display: inline-block;position: relative;top: -10px"
+              >
+                | 购物车
+              </span>
             </span>
-            <span>新品推荐</span>
-            <span>热卖</span>
-            <span>社区</span>
+
+            <span v-if="!$route.meta.isshow">新品推荐</span>
+            <span v-if="!$route.meta.isshow">热卖</span>
+            <span v-if="!$route.meta.isshow">社区</span>
           </div>
-          <div class="bottom-right">
+          <div class="bottom-right" v-if="!$route.meta.isshow">
             <div class="search-bar">
-              <input type="text" class="ipt" v-model="keyword" />
-              <i class="iconfont icon-sousuo" @click="toSearch()"></i>
+              <input
+                type="text"
+                class="ipt"
+                v-model="keyword"
+                @keyup.enter="toSearch"
+              />
+              <i class="iconfont icon-sousuo" @click="toSearch"></i>
             </div>
           </div>
         </div>
@@ -50,11 +123,40 @@ export default {
   data() {
     return {
       keyword: '',
+      dialogFormVisible: false,
+      dialogFormRegister: false,
+      form: {
+        username: '',
+        password: '',
+      },
+      formRegister: {
+        username: '',
+        password: '',
+      },
+      formLabelWidth: '0',
     }
   },
   methods: {
     toSearch() {
-      this.$router.push({ name: 'search', params: { keyword: this.keyword } })
+      this.$router.push({ name: 'search', params: { key_word: this.keyword } })
+    },
+    //登录
+    async submitLogin() {
+      this.dialogFormVisible = false
+      const { username, password } = this.form
+      const res = await this.$API.reqLogin(username, password)
+      if (res.data.code === 200) {
+        this.$message.success('恭喜你登录成功')
+      }
+    },
+    //注册
+    async submitRegister() {
+      this.dialogFormRegister = false
+      const { username, password } = this.formRegister
+      const res = await this.$API.reqRegister(username, password)
+      if (res.data.code === 200) {
+        this.$message('恭喜你注册成功')
+      }
     },
   },
 }
