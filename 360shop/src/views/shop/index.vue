@@ -598,9 +598,10 @@ export default {
     },
     //加入购物车
     async addShopCart() {
-      if (!this.userInfo) {
+      if (!this.userInfo.username) {
         this.$bus.$emit("showLogin");
         this.$message.error("请先登录");
+        return
       }
       const res = await this.$API.reqAddShopCart(this.itemId);
       console.log(res);

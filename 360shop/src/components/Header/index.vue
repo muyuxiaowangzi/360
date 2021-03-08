@@ -97,19 +97,12 @@
                   src="https://p.ssl.qhimg.com/t0102789b8d00c3dfce.png"
                   alt=""
               /></router-link>
-              <span
-                v-if="$route.meta.isshow"
-                style="display: inline-block;position: relative;top: -10px"
-              >
-                | 购物车
-              </span>
             </span>
-
-            <span v-if="!$route.meta.isshow">新品推荐</span>
-            <span v-if="!$route.meta.isshow">热卖</span>
-            <span v-if="!$route.meta.isshow">社区</span>
+            <span>新品推荐</span>
+            <span>热卖</span>
+            <span>社区</span>
           </div>
-          <div class="bottom-right" v-if="!$route.meta.isshow">
+          <div class="bottom-right">
             <div class="search-bar">
               <input
                 type="text"
@@ -117,7 +110,7 @@
                 v-model="keyword"
                 @keyup.enter="toSearch"
               />
-              <i class="iconfont icon-sousuo" @click="toSearch"></i>
+              <i class="iconfont icon-sousuo" @click="toSearch()"></i>
             </div>
           </div>
         </div>
@@ -126,48 +119,64 @@
   </div>
 </template>
 <script>
+import { mapState } from "vuex";
 export default {
-  name: 'Heater',
+  name: "Heater",
   data() {
     return {
-      keyword: '',
+      keyword: "",
       dialogFormVisible: false,
       dialogFormRegister: false,
       form: {
-        username: '',
-        password: '',
+        username: "",
+        password: ""
       },
       formRegister: {
-        username: '',
-        password: '',
+        username: "",
+        password: ""
       },
-      formLabelWidth: '0',
-    }
+      formLabelWidth: "0",
+      userInfo: {}
+    };
+  },
+  mounted() {
+    this.$bus.$on("showLogin", () => {
+      this.dialogFormVisible = true;
+    });
+  },
+  computed: {
+    ...mapState({
+      userInfoList: state => state.userInfo
+    })
   },
   methods: {
     toSearch() {
-      this.$router.push({ name: 'search', params: { key_word: this.keyword } })
+      this.$router.push({ name: "search", params: { keyword: this.keyword } });
     },
     //登录
     async submitLogin() {
-      this.dialogFormVisible = false
-      const { username, password } = this.form
-      const res = await this.$API.reqLogin(username, password)
+      this.dialogFormVisible = false;
+      const { username, password } = this.form;
+      const res = await this.$API.reqLogin(username, password);
       if (res.data.code === 200) {
-        this.$message.success('恭喜你登录成功')
+        this.$message.success("恭喜你登录成功");
+        this.userInfo = res.data;
+        this.$store.dispatch("getUserInfo");
+      } else {
+        this.$message.error(res.data.msg);
       }
     },
     //注册
     async submitRegister() {
-      this.dialogFormRegister = false
-      const { username, password } = this.formRegister
-      const res = await this.$API.reqRegister(username, password)
+      this.dialogFormRegister = false;
+      const { username, password } = this.formRegister;
+      const res = await this.$API.reqRegister(username, password);
       if (res.data.code === 200) {
-        this.$message('恭喜你注册成功')
+        this.$message("恭喜你注册成功");
       }
-    },
-  },
-}
+    }
+  }
+};
 </script>
 <style lang="less" scoped>
 .header {
