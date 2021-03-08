@@ -18,7 +18,8 @@ module.exports = {
         }
       },
       "/login": {
-        target: "http://192.168.19.62:8088",
+        // target: "http://192.168.19.62:8088",
+        target: "http://192.168.19.33:8080",
         ws: true,
         changeOrigin: true,
         pathRewrite: {

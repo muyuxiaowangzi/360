@@ -4,6 +4,7 @@ import router from "./router";
 import store from "./store";
 import Pagination from "./components/pagination";
 import TypeNav from "./components/TypeNav";
+import AddressAlert from './components/AddressAlert/index.vue'
 // 使用element-ui
 import ElementUI from "element-ui";
 import "element-ui/lib/theme-chalk/index.css";
@@ -17,6 +18,8 @@ Vue.prototype.$bus = new Vue();
 // 变为全局组件
 Vue.component("Pagination", Pagination);
 Vue.component("TypeNav", TypeNav);
+Vue.component('AddressAlert', AddressAlert)
+Vue.prototype.$bus = new Vue()
 new Vue({
   beforeCreate() {
     Vue.prototype.$bus = new Vue();
