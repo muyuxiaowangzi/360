@@ -45,7 +45,11 @@
       </div>
       <div class="typeNav_right" :class="isShowRight ? 'showRight' : ''" v-else>
         <div class="typeNav_cen">
+          <div v-if="isShowLoadin" class="load">
+            <strong>加载中...</strong>
+          </div>
           <div
+            v-else
             class="type_list"
             v-for="type in categoryInfo.secondary"
             :key="type.name"
@@ -71,7 +75,7 @@
 </template>
 <script>
 export default {
-  name: 'TypeNav',
+  name: "TypeNav",
   data() {
     return {
       isShowRight: false,
@@ -83,56 +87,59 @@ export default {
       categoryInfo: {},
       //保存上一次请求的分类id
       preId: null,
-    }
+      isShowLoadin: true
+    };
   },
   async mounted() {
     //获取分类数据
-    const result = await this.$API.reqPrimaryCategory()
-    this.typeNavInfo = result.data.data
+    const result = await this.$API.reqPrimaryCategory();
+    this.typeNavInfo = result.data.data;
     // console.log(result);
 
-    const resIndexContainer = await this.$API.reqIndexContainer()
+    const resIndexContainer = await this.$API.reqIndexContainer();
     // console.log(resIndexContainer);
     //保存banner图数据
-    this.IndexContainer = resIndexContainer.data.data
+    this.IndexContainer = resIndexContainer.data.data;
   },
   methods: {
     //分类移入事件
     async enterClick(index, id) {
       //改变下标，切换选中状态
-      this.enterIndex = index
+      this.enterIndex = index;
       //右边是否显示
-      this.isShowRight = true
+      this.isShowRight = true;
       // 判断是否还是移入的前一个
-      if (id === this.preId) return
+      if (id === this.preId) return;
       //根据分类id获取分类详细数据
+      this.isShowLoadin = true;
       const result = await this.$API.reqSecondaryCategory(
         this.typeNavInfo.type,
         id
-      )
-      this.categoryInfo = result.data.data
-      this.preId = id
+      );
+      this.categoryInfo = result.data.data;
+      this.isShowLoadin = false;
+      this.preId = id;
     },
     noEnterClick() {
-      this.isShowRight = false
+      this.isShowRight = false;
       //改变下标，切换选中状态
-      this.enterIndex = -2
+      this.enterIndex = -2;
     },
     searchIphone(id) {
       if (id) {
         this.$router.push({
-          path: '/search',
-          query: { brand_id: 14, category3_id: 166 },
-        })
+          path: "/search",
+          query: { brand_id: 14, category3_id: 166 }
+        });
       } else {
         this.$router.push({
-          path: '/search',
-          query: { brand_id: 309, category3_id: 166 },
-        })
+          path: "/search",
+          query: { brand_id: 309, category3_id: 166 }
+        });
       }
-    },
-  },
-}
+    }
+  }
+};
 </script>
 <style scoped>
 .container_top {
@@ -193,6 +200,13 @@ export default {
 .typeNav_right .typeNav_cen {
   height: 530px;
   overflow-y: auto;
+}
+.typeNav_right .typeNav_cen .load {
+  text-align: center;
+  line-height: 530px;
+}
+.typeNav_right .typeNav_cen .load strong {
+  font-size: 20px;
 }
 .typeNav_right .typeNav_cen .type_list {
   position: relative;
