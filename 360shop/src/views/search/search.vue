@@ -138,10 +138,7 @@
             <ul class="list" v-if="shopData.product.length">
               <li v-for="item in shopData.product" :key="item.id">
                 <img
-                  :src="
-                    `http://ceair.oss-cn-shanghai.aliyuncs.com/image${item.picUrl}`
-                  "
-                  alt=""
+                  v-lazy="`http://ceair.oss-cn-shanghai.aliyuncs.com/image${item.picUrl}`"
                 />
                 <div class="shopName">{{ item.name }}</div>
                 <div class="tow">￥ {{ item.currentPrice }}</div>
@@ -310,6 +307,7 @@ export default {
     },
   },
   watch: {
+    // 监视路由
     $route(to) {
       const { params } = to
       const options = {

@@ -11,11 +11,13 @@
             <span>360智慧生活</span>
           </div>
           <div class="top-right">
-            <span><router-link to="/myIfo">崔旺</router-link></span>
             <!-- <span> 注册</span> -->
             <!-- 登录 -->
             <span v-if="!userInfo.username && !userInfoList.username">
-              <el-button type="text" @click="dialogFormVisible = true"
+              <el-button
+                style="margin-right: 28px;color:#fff"
+                type="text"
+                @click="dialogFormVisible = true"
                 >登录</el-button
               >
               <el-dialog
@@ -45,7 +47,10 @@
                 </el-form>
               </el-dialog>
 
-              <el-button type="text" @click="dialogFormRegister = true"
+              <el-button
+                type="text"
+                @click="dialogFormRegister = true"
+                style="color:#fff"
                 >注册</el-button
               >
               <el-dialog
@@ -76,14 +81,28 @@
               </el-dialog>
             </span>
 
-            <span v-else>{{ userInfoList.username }}</span>
-            <span><router-link to="/order">订单结算</router-link></span>
-            <span><router-link to="/shop">商品详情</router-link></span>
+            <span v-else class="loginpull-down"
+              >{{ userInfoList.username }}
+              <div class="down">
+                <div class="name">{{ userInfoList.username }}</div>
+                <div>我的会员</div>
+                <div>
+                  <router-link to="/myIfo" style="outline: none"
+                    >我的订单</router-link
+                  >
+                </div>
+                <div>我的优惠券</div>
+                <div>我的收藏</div>
+                <div>我的积分</div>
+                <div>我的预约</div>
+                <div>收货地址</div>
+                <div>帐号设置</div>
+                <div @click="logOut">退出登录</div>
+              </div>
+            </span>
+            <span>360手机商城</span>
             <span
-              ><img
-                src="./image/shop.jpg"
-                alt=""
-                @click="$router.push('/shopCart')"
+              ><img src="./image/shop.jpg" alt="" @click="toShopCart"
             /></span>
           </div>
         </div>
@@ -119,64 +138,79 @@
   </div>
 </template>
 <script>
-import { mapState } from "vuex";
+import { mapState } from 'vuex'
 export default {
-  name: "Heater",
+  name: 'Heater',
   data() {
     return {
-      key_word: "",
+      key_word: '',
       dialogFormVisible: false,
       dialogFormRegister: false,
       form: {
-        username: "",
-        password: ""
+        username: '',
+        password: '',
       },
       formRegister: {
-        username: "",
-        password: ""
+        username: '',
+        password: '',
       },
-      formLabelWidth: "0",
-      userInfo: {}
-    };
+      formLabelWidth: '0',
+      userInfo: {},
+    }
   },
   mounted() {
-    this.$bus.$on("showLogin", () => {
-      this.dialogFormVisible = true;
-    });
+    this.$bus.$on('showLogin', () => {
+      this.dialogFormVisible = true
+    })
   },
   computed: {
     ...mapState({
-      userInfoList: state => state.userInfo
-    })
+      userInfoList: (state) => state.userInfo,
+    }),
   },
   methods: {
+    // 跳转到搜索页面
     toSearch() {
-      this.$router.push({ name: "search", params: { key_word: this.key_word } });
+      this.$router.push({ name: 'search', params: { key_word: this.key_word } })
     },
     //登录
     async submitLogin() {
-      this.dialogFormVisible = false;
-      const { username, password } = this.form;
-      const res = await this.$API.reqLogin(username, password);
+      this.dialogFormVisible = false
+      const { username, password } = this.form
+      const res = await this.$API.reqLogin(username, password)
       if (res.data.code === 200) {
-        this.$message.success("恭喜你登录成功");
-        this.userInfo = res.data;
-        this.$store.dispatch("getUserInfo");
+        this.$message.success('恭喜你登录成功')
+        this.userInfo = res.data
+        this.$store.dispatch('getUserInfo')
       } else {
-        this.$message.error(res.data.msg);
+        this.$message.error(res.data.msg)
       }
     },
     //注册
     async submitRegister() {
-      this.dialogFormRegister = false;
-      const { username, password } = this.formRegister;
-      const res = await this.$API.reqRegister(username, password);
+      this.dialogFormRegister = false
+      const { username, password } = this.formRegister
+      const res = await this.$API.reqRegister(username, password)
       if (res.data.code === 200) {
-        this.$message("恭喜你注册成功");
+        this.$message('恭喜你注册成功')
       }
-    }
-  }
-};
+    },
+    // 点击退出登录
+    logOut() {
+      this.delCookie('T')
+      this.delCookie('Q')
+      location.reload()
+    },
+
+    toShopCart() {
+      if (this.userInfoList.username) {
+        this.$router.push('/shopCart')
+      } else {
+        this.dialogFormVisible = true
+      }
+    },
+  },
+}
 </script>
 <style lang="less" scoped>
 .header {
@@ -262,6 +296,37 @@ export default {
         display: flex;
         justify-content: space-between;
         align-items: center;
+        .loginpull-down {
+          position: relative;
+          &:hover {
+            .down {
+              display: flex;
+            }
+          }
+          .down {
+            width: 120px;
+            height: 300px;
+            top: -8px;
+            left: -43px;
+            border: 1px solid #fff;
+            border-radius: 5px;
+            position: absolute;
+            background-color: #fff;
+            display: none;
+            font-size: 12px;
+            flex-direction: column;
+            align-items: center;
+            color: rgb(102, 102, 102);
+            justify-content: space-around;
+            div {
+              cursor: pointer;
+            }
+            .name {
+              color: #999;
+              font-weight: 700;
+            }
+          }
+        }
       }
     }
   }

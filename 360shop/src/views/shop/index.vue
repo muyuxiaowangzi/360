@@ -1,5 +1,6 @@
 <template>
   <div class="allContainer">
+    <!-- <TypeNav /> -->
     <!-- 商品详情页 -->
     <div class="shopContainer">
       <!-- 左侧 -->
@@ -8,9 +9,7 @@
         <div class="Magnifier" ref="Magnifier">
           <div class="event" @mousemove="handleMove"></div>
           <div class="smallImg" v-if="shopDetail.imgContent">
-            <!-- <img :src="shopDetail.video" /> -->
-            <img alt="" :src="shopDetail.imgContent[currentIndex]" />
-            <!-- <video :src="shopDetail.video"></video> -->
+            <img alt :src="shopDetail.imgContent[currentIndex]" />
           </div>
           <div class="zoom" ref="zoom"></div>
           <div class="bigImg" v-if="shopDetail.imgContent">
@@ -25,21 +24,9 @@
         <!-- 底部详情 -->
         <div class="detail">
           <ul>
-            <li>
+            <li v-for="item in shopDetail.itemServiceInfo" :key="item.id">
               <img src="https://p1.ssl.qhimg.com/t014f3c7cc8304a06c2.png" alt />
-              <span>360商城发货&售后</span>
-            </li>
-            <li>
-              <img src="https://p1.ssl.qhimg.com/t014f3c7cc8304a06c2.png" alt />
-              <span>满99元包邮</span>
-            </li>
-            <li>
-              <img src="https://p1.ssl.qhimg.com/t014f3c7cc8304a06c2.png" alt />
-              <span>7天无理由退货</span>
-            </li>
-            <li>
-              <img src="https://p1.ssl.qhimg.com/t014f3c7cc8304a06c2.png" alt />
-              <span>15天免费换货</span>
+              <span>{{ item.text }}</span>
             </li>
           </ul>
         </div>
@@ -50,11 +37,6 @@
           <!-- 标题区域 -->
           <div class="info-title">{{ shopDetail.title }}</div>
           <div class="info-subTitle">
-            <!-- <span>{{summaryTitle}}</span> -->
-            <!-- <br /> -->
-            <!-- <a :href="shopDetail.summaryUrl">{{shopDetail.summaryTitle}}</a> -->
-            <!-- {{shopDetail.summary}} -->
-            <span>{{ summaryTitle }}</span>
             <a v-html="shopDetail.summary"></a>
           </div>
           <!-- 价格、促销区域 -->
@@ -93,18 +75,21 @@
                   <div class="cate">
                     <div class="cate-label">分 类</div>
                     <ul class="cate-list">
-                      <li
-                        class="cate-item"
-                        :class="
-                          detailList.itemId === categoryItem.itemId
-                            ? 'active'
-                            : ''
-                        "
-                        v-for="category in categoryList"
-                        :key="category.ctitle"
-                      >
-                        {{ category.ctitle }}
-                      </li>
+                      <template v-if="categoryList">
+                        <li
+                          class="cate-item"
+                          v-for="(category, index) in categoryList"
+                          @click="changeChoose(index)"
+                          :class="
+                            category.ctitle === defaultSelected[0].ctitle
+                              ? 'active'
+                              : ''
+                          "
+                          :key="category.ctitle"
+                        >
+                          {{ category.ctitle }}
+                        </li>
+                      </template>
                     </ul>
                   </div>
                   <!-- 数量 -->
@@ -132,8 +117,8 @@
                     <button class="buyNow">
                       <a href="javascript:;">立即购买</a>
                     </button>
-                    <button class="addCart">
-                      <a href="javascript:;" @click="addShopCart">加入购物车</a>
+                    <button class="addCart" @click="addShopCart">
+                      <a href="javascript:;">加入购物车</a>
                     </button>
                     <a href="javascript:;" class="icon-btn" @click="addheart">
                       <i class="icon-heart" :class="isFavo ? 'active' : ''"></i>
@@ -170,7 +155,7 @@
                 <span class="info-tab-inner">规格参数</span>
               </a>
               <a href="javascript:;" class="info-tab-item info-tab-lastInner">
-                <span class="info-tab-inner ">常见问题</span>
+                <span class="info-tab-inner">常见问题</span>
               </a>
             </div>
             <!-- 加入购物车 -->
@@ -207,20 +192,8 @@
       <div class="info-content">
         <!-- 图片 -->
         <div class="info-content-image">
-          <p>
-            <img src="../../static/images/9.png" alt />
-          </p>
-          <p>
-            <img src="../../static/images/10.png" alt />
-          </p>
-          <p>
-            <img src="../../static/images/11.png" alt />
-          </p>
-          <p>
-            <img src="../../static/images/12.png" alt />
-          </p>
-          <p>
-            <img src="../../static/images/13.png" alt />
+          <p v-for="item in shopDetail.imgContent" :key="item">
+            <img v-lazy="item" alt />
           </p>
           <div
             style="color:#999;text-align:left;padding:1rem;line-height: 1.6rem;margin-top:20px;"
@@ -463,154 +436,187 @@
   </div>
 </template>
 <script>
-import ImageList from "./ImageList";
-import { mapState } from "vuex";
+import ImageList from './ImageList'
+import { mapState } from 'vuex'
 export default {
-  name: "Shop",
+  name: 'Shop',
   components: {
-    ImageList
+    ImageList,
   },
   data() {
     return {
       skuNum: 1,
       shopDetail: {},
-      summaryTitle: "",
       currentIndex: 0,
       priceData: {},
-      notice: "",
+      notice: '',
       categoryList: [],
       detailList: {},
-      categoryItem: {},
       isFavo: 0,
       isShow: false,
-      itemId: null
-    };
-  },
-  async mounted() {
-    // 获取商品详情数据
-    let { itemId } = this.$route.query;
-    this.itemId = itemId;
-    let result = await this.$API.reqShopDetail(itemId);
-    // console.log(result)
-    let detailList = result.data.data;
-    // console.log(detailList);
-    this.detailList = detailList;
-    // 获取商品信息数据
-    let shopDetail = await detailList.itemInfo;
-    // console.log(data)
-    this.shopDetail = shopDetail;
-    // console.log(this.shopDetail)
-    let summaryTitle = this.shopDetail.summary.split("<")[0];
-    this.summaryTitle = summaryTitle;
-    // 获取商品价格、优惠数据
-    let priceData = detailList.promotion;
-    // console.log(priceData,priceData.current.tag)
-    this.priceData = priceData;
-    // 获取通知消息数据
-    let notice = detailList.notice;
-    this.notice = notice;
-    // 获取商品分类数据
-    let categoryList = await detailList.subItems;
-    this.categoryList = categoryList;
-    // detailList.itemId===categoryList.itemId
-    // 当前商品itemId是否跟点击商品itemId相同
-    let categoryItem = this.categoryList.find(item => {
-      return item.itemId === this.detailList.itemId;
-    });
-    // console.log(categoryItem)
-    // let categoryItemId = categoryItem.itemId
-    this.categoryItem = categoryItem;
-
-    let { isFavo } = detailList;
-    this.isFavo = isFavo;
-    // 监听系统滚动条高度
-    document.addEventListener("scroll", () => {
-      let scrollTop = document.documentElement.scrollTop;
-      // console.log(scrollTop);
-      if (scrollTop > 1384) {
-        this.isShow = true;
-      } else {
-        this.isShow = false;
-      }
-    });
+      defaultSelected: {},
+    }
   },
   computed: {
     ...mapState({
-      userInfo: state => state.userInfo
+      userInfo: (state) => state.userInfo,
+    }),
+  },
+  async mounted() {
+    const loading = this.$loading({
+      text: '正在加载中。。。',
+      background: 'rgba(255, 255, 255,0.8)',
+      target: document.querySelector('.shopContainer'),
+    })
+    // 获取商品详情数据
+    await this.getShopDetail()
+    loading.close()
+
+    // 获取商品价格、优惠数据
+    const priceData = await this.detailList.promotion
+    // console.log(priceData,priceData.current.tag)
+    this.priceData = priceData
+
+    // 获取通知消息数据
+    const { notice } = this.detailList
+    this.notice = notice
+
+    // 获取商品分类数据
+    const categoryList = await this.detailList.subItems
+    this.categoryList = categoryList
+    // console.log(categoryList)
+    // 分类中华默认选中的选项
+    this.getShopSelected()
+
+    // 监听系统滚动条高度
+    document.addEventListener('scroll', () => {
+      let scrollTop = document.documentElement.scrollTop
+      // console.log(scrollTop)
+      if (scrollTop > 1384) {
+        this.isShow = true
+      } else {
+        this.isShow = false
+      }
     })
   },
+
   methods: {
     // 放大镜功能
     handleMove(e) {
       // console.log(e,this)
       // 获取遮挡层对象
-      const zoom = this.$refs.zoom;
+      const zoom = this.$refs.zoom
       // 获取大图对象
-      const bigImg = this.$refs.bigImg;
+      const bigImg = this.$refs.bigImg
       // 获取鼠标的位置
-      let { offsetX, offsetY } = e;
+      let { offsetX, offsetY } = e
       // 获取遮挡蹭对象的宽度
-      const zoomWidth = zoom.clientWidth / 2;
+      const zoomWidth = zoom.clientWidth / 2
       // 设置鼠标在遮挡层对象的中心
-      let left = offsetX - zoomWidth / 2;
-      let top = offsetY - zoomWidth / 2;
+      let left = offsetX - zoomWidth / 2
+      let top = offsetY - zoomWidth / 2
       // 限制边界
-      const Magnifier = this.$refs.Magnifier;
-      const magnifierWidth = Magnifier.clientWidth;
+      const Magnifier = this.$refs.Magnifier
+      const magnifierWidth = Magnifier.clientWidth
       // console.log(magnifierWidth)
-      let overWidth = magnifierWidth - zoomWidth * 2;
+      let overWidth = magnifierWidth - zoomWidth * 2
       // console.log(overWidth)
-      left = left < 0 ? 0 : left > overWidth ? overWidth : left;
-      top = top < 0 ? 0 : top > overWidth ? overWidth : top;
+      left = left < 0 ? 0 : left > overWidth ? overWidth : left
+      top = top < 0 ? 0 : top > overWidth ? overWidth : top
       // 设置遮挡层坐标
-      zoom.style.left = left + "px";
-      zoom.style.top = top + "px";
+      zoom.style.left = left + 'px'
+      zoom.style.top = top + 'px'
 
       // 设置大图显示
       if (bigImg) {
-        bigImg.style.left = -left * 2 + "px";
-        bigImg.style.top = -top * 2 + "px";
+        bigImg.style.left = -left * 2 + 'px'
+        bigImg.style.top = -top * 2 + 'px'
       }
     },
     // 数量操作
     handleChange(skuNum) {
-      this.skuNum += skuNum;
+      this.skuNum += skuNum
       if (this.skuNum <= 1) {
-        this.skuNum = 1;
+        this.skuNum = 1
       }
     },
     // 改变下标
     changeCurrentIndex(index) {
-      this.currentIndex = index;
+      this.currentIndex = index
     },
     // 显示二维码
     showCode() {
-      this.$refs.code.className = "active code-hover";
+      this.$refs.code.className = 'active code-hover'
     },
     // 隐藏二维码
     hideCode() {
-      this.$refs.code.className = "code-hover";
+      this.$refs.code.className = 'code-hover'
     },
     // 添加心愿单
     addheart() {
-      this.isFavo = !this.isFavo;
+      this.isFavo = !this.isFavo
+      // this.detailList.isFavo = !this.detailList.isFavo
       // console.log(this.detailList)
+    },
+    // 切换分类
+    async changeChoose(currentIndex) {
+      this.currentIndex = currentIndex
+      const itemId = this.detailList.subItems[currentIndex].itemId
+      if (this.$route.query.itemId === itemId) return
+      this.$router.push({ name: 'shop', query: { itemId } })
+      const loading = this.$loading({
+        text: '正在加载中。。。',
+        background: 'rgba(255, 255, 255,0.5)',
+        target: document.querySelector('.shopContainer'),
+      })
+
+      loading.close()
+
+      // const shopDetail =  this.detailList.itemInfo
+      // this.shopDetail = shopDetail
+    },
+    // 获取商品详情数据和商品信息数据
+    async getShopDetail() {
+      const { itemId } = this.$route.query
+      const result = await this.$API.reqShopDetail(itemId)
+      // 商品详情数据
+      const detailList = result.data.data
+      this.detailList = detailList
+      // console.log(detailList)、
+      // 商品信息数据
+      const shopDetail = await this.detailList.itemInfo
+      this.shopDetail = shopDetail
+      this.currentIndex = 0
+    },
+    // 获取默认选中的商品分类
+    getShopSelected() {
+      const defaultSelected = this.categoryList.filter((item) => {
+        if (item.itemId === this.detailList.itemId) {
+          return item
+        }
+      })
+      this.defaultSelected = defaultSelected
     },
     //加入购物车
     async addShopCart() {
       if (!this.userInfo.username) {
-        this.$bus.$emit("showLogin");
-        this.$message.error("请先登录");
+        this.$bus.$emit('showLogin')
+        this.$message.error('请先登录')
         return
       }
-      const res = await this.$API.reqAddShopCart(this.itemId);
-      console.log(res);
-      if (res.data.errmsg == "添加购物车成功") {
-        this.$message.success("添加购物车成功");
+      const res = await this.$API.reqAddShopCart(this.$route.query.itemId)
+      if (res.data.errmsg == '添加购物车成功') {
+        this.$message.success('添加购物车成功')
       }
-    }
-  }
-};
+    },
+  },
+  watch: {
+    async $route() {
+      await this.getShopDetail()
+      this.getShopSelected()
+    },
+  },
+}
 </script>
 <style lang="less" scoped>
 .allContainer {
@@ -639,10 +645,8 @@ export default {
         }
         .smallImg {
           width: 100%;
-          video {
-            width: 100%;
-            height: 100%;
-          }
+          height: 480px;
+          z-index: 999;
         }
         .zoom {
           width: 300px;
@@ -687,58 +691,6 @@ export default {
           }
         }
       }
-      // 轮播图
-      // .swiper {
-      //   margin-top: 32px;
-      //   // border: 1px solid pink;
-      //   position: relative;
-      //   .btn .leftBtn,
-      //   .rightBtn {
-      //     height: 53px;
-      //     width: 15px;
-      //     background: #fafafa;
-      //     border: none;
-      //     // pointer-events: none;
-      //     outline: none;
-      //     cursor: pointer;
-      //   }
-      //   .btn .leftBtn {
-      //     position: absolute;
-      //     left: 0;
-      //     top: 50%;
-      //     margin-top: -26.5px;
-      //   }
-      //   .btn .rightBtn {
-      //     position: absolute;
-      //     right: 0;
-      //     top: 50%;
-      //     margin-top: -26.5px;
-      //   }
-      //   .list {
-      //     margin: 0 auto;
-      //     width: 450px;
-      //   }
-      //   ul {
-      //     display: flex;
-      //     list-style-type: none;
-      //     width: 720px;
-      //     height: 92px;
-      //     // border: 1px solid green;
-      //     .imgItem {
-      //       height: 100%;
-      //       width: 90px;
-      //       .img {
-      //         // border: 1px solid yellow;
-      //         border-bottom-width: 3px;
-      //         height: 88px;
-      //         width: 88px;
-      //         img {
-      //           height: 100%;
-      //         }
-      //       }
-      //     }
-      //   }
-      // }
       // 详情
       .detail {
         background: #fafafa;
@@ -780,9 +732,9 @@ export default {
           line-height: 20px;
           margin-top: 7px;
           a {
-            color: #2661b2;
+            color: #f33;
             margin-right: 5px;
-            text-decoration: underline;
+            // text-decoration: underline;
           }
         }
         .info-wrap {
@@ -893,7 +845,7 @@ export default {
                       color: #333;
                       border-radius: 4px;
                       cursor: pointer;
-                      margin: 0 5px 10px;
+                      margin: 0 10px 10px;
                       &.active {
                         border: 1px solid #f33;
                         background: #ffebe9;

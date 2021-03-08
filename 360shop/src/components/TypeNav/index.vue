@@ -61,7 +61,7 @@
                 v-for="typeItem in type.item"
                 :key="typeItem.name"
               >
-                <img :src="typeItem.pic" alt="" />
+                <img :src="typeItem.pic" alt="" @click="toShop(typeItem)" />
                 <strong>{{ typeItem.name }}</strong>
               </a>
             </div>
@@ -137,9 +137,21 @@ export default {
           query: { brand_id: 309, category3_id: 166 }
         });
       }
-    }
-  }
-};
+    },
+    // 点击去往商品详情界面
+    toShop(typeItem) {
+      // console.log(typeItem)
+      //.item[0].url.split('=')[1]
+      let result = typeItem.url
+      // console.log(this.categoryInfo.secondary)
+      let itemId = result.split('=')[1]
+      // console.log(itemId)
+      // let result= this.categoryInfo.secondary
+      // console.log(result)
+      this.$router.replace({ name: 'shop', query: { itemId } })
+    },
+  },
+}
 </script>
 <style scoped>
 .container_top {

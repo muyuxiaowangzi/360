@@ -19,10 +19,6 @@ export const reqLogin = (username, password) =>
 //注册
 export const reqRegister = (username, password) =>
   loginAjax.post("/register", { username, password });
-
-//获取购物车
-export const reqShopCart = () => ajax.post(`/shop/getshopcart`);
-
 //加入购物车
 export const reqAddShopCart = (item_id, num = 1) =>
   ajax.post(`/cart/addtocart?item_id=${item_id}&num=${num}`);
@@ -33,3 +29,20 @@ export const reqShopDetail = (itemId, rewardType = "point") =>
 
 //获取用户详情
 export const reqUserInfo = () => loginAjax.get("/getUserInfo");
+
+//切换单个商品是否选中
+export const reqCheckedOne = (edit = "select", items) =>
+  ajax.get(`/cart/newEditCart?edit=${edit}&items=${escape(items)}`);
+
+//改变全选按钮选中状态
+export const reqCheckedAll = (batchEdit = "cancel_all") =>
+  ajax.get(`/cart/newBatchEditCart?batchEdit=${batchEdit}`);
+
+//删除单个商品
+export const reqDeleteOne = (edit = "delete", items) =>
+  ajax.get(`/cart/newEditCart?edit=${edit}&items=${items}`);
+
+export const reqShopCart = () => ajax.get(`/cart/newcart`);
+//加减商品数量
+export const reqChangeProductNum = (edit = "add", items) =>
+  ajax.get(`/cart/newEditCart?edit=${edit}&items=${escape(items)}`);

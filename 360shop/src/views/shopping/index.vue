@@ -2,7 +2,7 @@
   <div class="cart">
     <ul class="cart_top">
       <li class="cart1">
-        <input type="checkbox" name="running" />
+        <input type="checkbox" name="running" v-model="isCheckedAll" />
         <strong>全选</strong>
       </li>
       <li class="cart2">
@@ -25,47 +25,66 @@
       </li>
     </ul>
     <p class="cart_p">360商城自营</p>
-    <ul
-      class="cart_center"
-      v-for="item in productList"
-      :key="item.data.create_time"
-    >
+    <ul class="cart_center" v-for="item in productList" :key="item.id">
       <li class="cartCenter1">
-        <input type="checkbox" :checked="item.data.selected" />
+        <input
+          type="checkbox"
+          :checked="item.selected"
+          @click="changeSelectOne(!item.selected, item.id)"
+        />
       </li>
       <li class="cartCenter2">
-        <img :src="item.data.img_list" />
-        <a href="javascript:;">{{ item.data.title }}</a>
+        <img :src="item.itemInfo.picture" />
+        <a href="javascript:;">{{ item.itemInfo.title }}</a>
       </li>
       <li class="cartCenter3">
-        <strong>分类：{{ item.data.ctitle.slice(1) }}</strong>
+        <strong
+          >分类：{{
+            item.itemInfo.skuSpecificationValues[0].values[0].value
+          }}</strong
+        >
       </li>
       <li class="cartCenter4">
-        <strong>￥{{ item.data.price_sale }}</strong>
+        <strong>￥{{ item.itemInfo.priceSale }}</strong>
       </li>
       <li class="cartCenter5">
-        <span>+</span>
+        <button @click="changeNum(item.id, 1)" style="outline: none">+</button>
         <input type="text" :value="item.count" />
-        <span>-</span>
+        <button
+          @click="changeNum(item.id, -1, item.count + 1)"
+          :disabled="item.count === 1"
+          :class="item.count === 1 ? 'no' : ''"
+          style="outline: none"
+        >
+          -
+        </button>
       </li>
       <li class="cartCenter6">
-        <strong>￥{{ item.data.price_sale * item.count }}</strong>
+        <strong>￥{{ item.itemInfo.priceSale * item.count }}</strong>
       </li>
       <li class="cartCenter7">
-        <strong>删除</strong>
+        <el-popconfirm
+          title="这是一段内容确定删除吗？"
+          @confirm="deleteOne(item.id)"
+        >
+          <el-button slot="reference">删除</el-button>
+        </el-popconfirm>
+        <!-- <strong @click="deleteOne(item.id)">删除</strong> -->
       </li>
     </ul>
 
     <ul class="cart_bottom">
       <li class="cartBottom1">
-        <input type="checkbox" name="running" />
+        <input type="checkbox" name="running" v-model="isCheckedAll" />
         <strong>全选</strong>
       </li>
-      <li class="cartBottom2">删除选中商品</li>
+      <li class="cartBottom2">
+        <a href="javascript:;" @click="deleteCheckedAll">删除选中商品</a>
+      </li>
       <li class="cartBottom3">
         <p>
           <span
-            >已选<a class="num">{{ totalNum }}</a
+            >已选<a class="num">{{ checkedNum }}</a
             >件商品</span
           >
           <span>合计：¥{{ totalPrice }}</span>
@@ -81,7 +100,7 @@
 
 <script>
 export default {
-  name: "ShopCart",
+  name: 'ShopCart',
   data() {
     return {
       //总价格
@@ -89,32 +108,145 @@ export default {
       //商品总数
       totalNum: null,
       //购物车商品列表数据
-      productList: []
-    };
+      productList: [],
+    }
   },
   async mounted() {
-    const res = await this.$API.reqShopCart();
-    // console.log(res);
-    const { total_num, total_price, item } = res.data.data;
-    //保存相关数据
-    this.totalPrice = total_price;
-    this.totalNum = total_num;
-    this.productList = Object.values(item);
-  }
-};
+    this.getShopCart()
+  },
+  methods: {
+    // 获取购物车列表数据
+    async getShopCart() {
+      const res = await this.$API.reqShopCart()
+      // console.log(res);
+      const { total, cartNum, carts } = res.data.data
+      //保存相关数据
+      this.totalPrice = total
+      this.totalNum = cartNum
+      this.productList = carts.itemInfos
+    },
+    //修改当个商品选中状态
+    async changeSelectOne(falg, id) {
+      const num = falg ? 1 : 0
+      const obj = {
+        [id]: {
+          action: num,
+          num: '1',
+        },
+      }
+      this.$API
+        .reqCheckedOne('select', JSON.stringify(obj))
+        .then(() => {
+          this.getShopCart()
+        })
+        .catch(() => {
+          this.getShopCart()
+        })
+    },
+    //删除当个商品
+    async deleteOne(id) {
+      const obj = {
+        [id]: {
+          action: -1,
+          num: 1,
+          promotionId: '',
+        },
+      }
+      this.$API
+        .reqDeleteOne('delete', JSON.stringify(obj))
+        .then(() => {
+          // console.log(res);
+          this.getShopCart()
+        })
+        .catch(() => {
+          this.getShopCart()
+          // console.log(err);
+          this.$message({
+            type: 'success',
+            message: '删除成功!',
+          })
+        })
+    },
+
+    //加减商品数量
+    async changeNum(id, type, num) {
+      const items = {
+        [id]: {
+          action: type,
+          num: num + type,
+          promotionId: '',
+        },
+      }
+      this.$API
+        .reqChangeProductNum('add', JSON.stringify(items))
+        .then(() => {
+          this.getShopCart()
+        })
+        .catch(() => {
+          this.getShopCart()
+        })
+    },
+    // 删除选中商品
+    async deleteCheckedAll() {
+      let obj = {
+        null: {
+          action: -1,
+          num: null,
+          promotionId: '',
+        },
+      }
+      this.productList.forEach((item) => {
+        if (item.selected) {
+          obj[item.id] = { action: -1, num: 2, promotionId: '' }
+        }
+      })
+      this.$API
+        .reqDeleteOne('delete', JSON.stringify(obj))
+        .then(() => {
+          this.getShopCart()
+        })
+        .catch(() => {
+          this.getShopCart()
+          this.$message.success('删除成功')
+        })
+    },
+  },
+  computed: {
+    //全选按钮
+    isCheckedAll: {
+      async set(val) {
+        await this.$API.reqCheckedAll(val ? 'select_all' : 'cancel_all')
+        this.getShopCart()
+      },
+      get() {
+        console.log(this.productList)
+        return this.productList.every((item) => item.selected)
+      },
+    },
+    //已选商品数量
+    checkedNum() {
+      return this.productList.reduce((num, item) => {
+        if (item.selected) {
+          num += item.count
+        }
+        return num
+      }, 0)
+    },
+  },
+}
 </script>
 
 <style lang="less" scoped>
 .cart {
   width: 1020px;
   margin: 20px auto;
-  background-color: #fff;
-  height: 50px;
+
   .cart_top {
     width: 100%;
     text-align: center;
     line-height: 50px;
     font-size: 14px;
+    background-color: #fff;
     li {
       display: inline-block;
       strong {
@@ -168,7 +300,7 @@ export default {
       text-align: center;
       position: relative;
       ::before {
-        content: "";
+        content: '';
         width: 100%;
         height: 1px;
         background-color: #fff;
@@ -201,13 +333,17 @@ export default {
     }
     .cartCenter5 {
       width: 10%;
-      span {
+      button {
         display: inline-block;
         width: 32px;
-        height: 22px;
+        height: 24px;
         border: 1px solid rgba(221, 221, 221, 1);
         vertical-align: middle;
         text-align: center;
+        background-color: #fff;
+        &.no {
+          cursor: no-drop;
+        }
       }
       input {
         width: 32px;
@@ -242,7 +378,7 @@ export default {
     align-items: center;
     position: relative;
     &::after {
-      content: "";
+      content: '';
       height: 2px;
       width: 100%;
       background-color: #fff;

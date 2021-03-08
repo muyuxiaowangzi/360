@@ -9,6 +9,14 @@ import ElementUI from "element-ui";
 import "element-ui/lib/theme-chalk/index.css";
 import "./plugins/swiper";
 import * as API from "./api/index.js";
+
+import VueLazyload from "vue-lazyload";
+import { setCookie, getCookie, delCookie } from "./plugins/cookie.js";
+const loadimage = require("./assets/images/loading.gif");
+
+Vue.use(VueLazyload, {
+  loading: loadimage
+});
 // import "@/styles/index.scss"; // global css
 Vue.use(ElementUI);
 Vue.config.productionTip = false;
@@ -20,6 +28,9 @@ Vue.component("TypeNav", TypeNav);
 new Vue({
   beforeCreate() {
     Vue.prototype.$bus = new Vue();
+    Vue.prototype.setCookie = setCookie;
+    Vue.prototype.getCookie = getCookie;
+    Vue.prototype.delCookie = delCookie;
   },
   router,
   store,
