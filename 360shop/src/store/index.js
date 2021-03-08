@@ -3,6 +3,9 @@ import Vuex from "vuex";
 import { reqUserInfo } from "../api/index";
 Vue.use(Vuex);
 
+import modules from './modules/index'
+Vue.use(Vuex)
+
 export default new Vuex.Store({
   state: {
     //用户信息对象
@@ -20,5 +23,5 @@ export default new Vuex.Store({
       commit("UPDATE_USERINFO", res.data);
     }
   },
-  modules: {}
-});
+  modules
+})

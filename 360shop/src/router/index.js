@@ -6,6 +6,9 @@ import Shop from "../views/shop/index.vue";
 import MyIfo from "../views/myInfo/MyIfo.vue";
 import Order from "../views/order/index.vue";
 import Shopping from "../views/shopping/index.vue";
+const UserInfo = () =>
+  import("../views/myInfo/components/userInfo/UserInfo.vue");
+const Address = () => import("../views/myInfo/components/Address/index.vue");
 
 import ShopCart from "../views/shopping/index.vue";
 import store from "../store/index";
@@ -42,17 +45,25 @@ const routes = [
     component: Shop
   },
   {
-    path: "/shopping",
-    name: "shopping",
-    component: Shopping,
-    meta: {
-      isshow: true
-    }
-  },
-  {
     path: "/myIfo",
     name: "myIfo",
-    component: MyIfo
+    component: MyIfo,
+    children: [
+      {
+        path: "/myIfo/userinfo",
+        name: "userinfo",
+        component: UserInfo
+      },
+      {
+        path: "/myIfo/address",
+        name: "Address",
+        component: Address
+      },
+      {
+        path: "/myIfo",
+        redirect: "/myIfo/userinfo"
+      }
+    ]
   },
   {
     path: "/order",
@@ -63,6 +74,11 @@ const routes = [
     path: "/shopCart",
     name: "shopCart",
     component: ShopCart
+  },
+  {
+    path: "/shopping",
+    name: "shopping",
+    component: Shopping
   }
 ];
 
