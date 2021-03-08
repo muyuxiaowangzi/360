@@ -17,7 +17,7 @@
       >
         <img :src="item.pic" alt="" />
         <p class="p_top">{{ item.title }}</p>
-        <p class="p_bottom">{{ item.desc }}</p>
+        <p class="p_bottom">{{ item.desc ? item.desc : item.title }}</p>
         <strong class="floor_price">￥{{ item.currentPrice }}</strong>
         <strong class="floor_noPrice">￥{{ item.originPrice }}</strong>
       </a>
