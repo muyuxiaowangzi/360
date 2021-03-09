@@ -1,4 +1,6 @@
-import address from './address'
+import address from "./address";
+import order from "./order";
 export default {
-  address
-}
+  address,
+  order
+};

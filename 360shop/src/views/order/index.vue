@@ -5,22 +5,48 @@
         <div class="info">
           <div class="title">
             <span>选择收货地址</span>
-            <a href="javascript:;" @click="dialogFormVisible = true"
-              >新建地址</a
-            >
+            <a href="javascript:;" @click="addAddress">新建地址</a>
           </div>
           <ul class="person">
-            <li class="person-content" :class="{ activeOne: isShowClo }">
+            <li
+              class="person-content"
+              @mouseenter="moveIn(index)"
+              @click="showBorder(index, address)"
+              :class="{ showBorder: curren === index }"
+              @mouseleave="moveOut"
+              v-for="(address, index) in userAddressList"
+              :key="address.id"
+            >
+              <div class="person-header">
+                <div class="btn" v-show="checked === index">默认</div>
+                <span>{{ address.name }}</span>
+                <span>{{ address.phone }}</span>
+              </div>
+              <div class="person-center">
+                <span>{{ address.detail }} </span>
+                <span>{{ address.address }}</span>
+              </div>
+              <ul class="person-footer" v-show="showId === index">
+                <li>
+                  <a href="javascript:;" @click="defaul(index)">设为默认</a>
+                </li>
+                <li>
+                  <a href="javascript:;" @click="edit(address, index)">编辑</a>
+                </li>
+                <li class="clear">
+                  <a href="javascript:;" @click="handleDel(address.id)">删除</a>
+                </li>
+              </ul>
+            </li>
+            <!-- <li class="person-content">
               <div class="person-header">
                 <div class="btn">默认</div>
                 <span>老王</span>
                 <span>130****0000</span>
               </div>
               <div class="person-center">
-                <span>北京</span>
-                <span>北京市</span>
-                <span>东城区</span>
-                <span>111</span>
+                <span>广东省 深圳市 罗湖区 </span>
+                <span>幸福小区6号楼</span>
               </div>
               <ul class="person-footer">
                 <li>
@@ -35,57 +61,43 @@
                   <a href="javascript:;">删除</a>
                 </li>
               </ul>
-            </li>
-            <li class="person-content">
-              <div class="person-header">
-                <!-- <div class="btn">默认</div> -->
-                <span>老王</span>
-                <span>130****0000</span>
-              </div>
-              <div class="person-center">
-                <span>北京</span>
-                <span>北京市</span>
-                <span>东城区</span>
-                <span>111</span>
-              </div>
-              <ul class="person-footer">
-                <li>
-                  <a href="javascript:;">设为默认</a>
-                </li>
-                <li>
-                  <a href="javascript:;" @click="dialogFormVisible = true"
-                    >编辑</a
-                  >
-                </li>
-                <li class="clear">
-                  <a href="javascript:;">删除</a>
-                </li>
-              </ul>
-            </li>
+            </li> -->
           </ul>
+          <div class="empty-box" v-if="!this.orderInfo.address">
+            <div class="empty-img">
+              <img src="@/static/images/map.png" alt="" />
+            </div>
+            <div class="empty-txt">还没有地址呢，赶快新建一个</div>
+          </div>
         </div>
       </div>
       <div class="two-content">
         <div class="trade-left">
           <div class="inner-title">商品清单</div>
           <div class="inner-center">360商城</div>
-          <div class="inner-footer">
+          <div
+            class="inner-footer"
+            v-for="item in orderInfo.items"
+            :key="item.id"
+          >
             <div class="inner-img">
-              <a href="javascript:;">
-                <img src="../../static/images/212.png" alt />
+              <a :href="item.itemInfo.url">
+                <img :src="item.itemInfo.picture" alt />
               </a>
             </div>
             <div class="inner-detail">
               <div class="detail-top">
-                <span>360 智能摄像机小水滴1080P</span>
+                <span>{{ item.itemInfo.title }}</span>
                 <span>分类：1080P</span>
-                <span>x1</span>
-                <span class="detail-red">￥169.00</span>
+                <span>x{{ item.count }}</span>
+                <span class="detail-red"
+                  >￥{{ item.itemInfo.priceSalePromotional }}</span
+                >
               </div>
               <div class="detail-bottom">
-                <span>7天无理由退货</span>
-                <span>15天换货</span>
-                <span>官方发货</span>
+                <span><i class="el-icon-success"></i>7天无理由退货</span>
+                <span><i class="el-icon-success"></i>15天换货</span>
+                <span><i class="el-icon-success"></i>官方发货</span>
               </div>
             </div>
           </div>
@@ -144,11 +156,12 @@
                 <th>
                   <span class="txt">
                     共计
-                    <span class="txt-color">1</span>件商品
+                    <span class="txt-color">{{ addCount }}</span
+                    >件商品
                   </span>
                   <span class="justify">商品总价</span>
                 </th>
-                <td>￥169.00</td>
+                <td>￥{{ addNum }}</td>
               </tr>
               <tr>
                 <th>
@@ -166,7 +179,7 @@
                 <th>
                   <span class="justify">活动优惠</span>
                 </th>
-                <td class="txt-color">-￥20.00</td>
+                <td class="txt-color">-￥0.00</td>
               </tr>
               <tr>
                 <th>
@@ -186,14 +199,13 @@
         <div class="settle-center">
           <div class="total-info">
             应付款
-            <span>￥149.00</span>
+            <span>￥{{ addNum }}</span>
           </div>
           <div class="total-add">
-            <span>北京</span>
-            <span>北京市</span>
-            <span>东城区</span>
-            <span>老王</span>
-            <span>13000000000</span>
+            <span>{{ newObj.detail }}</span>
+            <span>{{ newObj.address }}</span>
+            <span>{{ newObj.realname }}</span>
+            <span>{{ newObj.mobile }}</span>
           </div>
         </div>
         <div class="settle-footer">
@@ -203,103 +215,188 @@
     </div>
     <!-- 对话框 -->
     <el-dialog title="收货信息" :visible.sync="dialogFormVisible" width="40%">
-      <el-form :model="form">
+      <el-form :model="obj">
         <el-form-item label="收货人" :label-width="formLabelWidth">
           <el-input
-            v-model="form.name"
+            v-model="obj.name"
+            name="person"
             autocomplete="off"
             placeholder="请您填写收货人名称"
+            v-validate="'required'"
+            :class="{ valid: errors.has('person') }"
           ></el-input>
         </el-form-item>
+        <p class="error-msg">{{ errors.first('person') }}</p>
         <el-form-item label="地址" :label-width="formLabelWidth">
-          <el-select v-model="form.region" placeholder="请选择">
-            <el-option label="北京" value="shanghai"></el-option>
-            <el-option label="深圳" value="shenzhen"></el-option>
-            <el-option label="上海" value="shanghai"></el-option>
-            <el-option label="广州" value="guangzhou"></el-option>
+          <el-select v-model="obj.detail" placeholder="请选择">
+            <el-option label="北京" value="北京市"></el-option>
+            <el-option label="深圳" value="深圳市"></el-option>
+            <el-option label="上海" value="上海市"></el-option>
+            <el-option label="广州" value="广州市"></el-option>
           </el-select>
           <el-input
-            type="textarea"
-            :autosize="{ minRows: 2, maxRows: 4 }"
+            type="text"
             placeholder="请您填写详细地址"
-            v-model="textarea2"
+            v-model="obj.address"
             margin-top="30px"
             style="margin-top:10px"
+            name="address"
+            v-validate="'required'"
+            :class="{ valid: errors.has('address') }"
           ></el-input>
         </el-form-item>
+        <p class="error-msg">{{ errors.first('address') }}</p>
         <el-form-item label="手机号" :label-width="formLabelWidth">
-          <el-input v-model="input" placeholder="请您填写手机号"></el-input>
+          <el-input
+            v-model="obj.phone"
+            name="phone"
+            placeholder="请您填写手机号"
+            v-validate="'required|phone'"
+            :class="{ valid: errors.has('phone') }"
+          ></el-input>
         </el-form-item>
+        <p class="error-msg">{{ errors.first('phone') }}</p>
         <el-form-item label="" :label-width="formLabelWidth">
-          <el-checkbox v-model="checked">设置为默认地址</el-checkbox>
+          <el-checkbox v-model="obj.checked">设置为默认地址</el-checkbox>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogFormVisible = false"
-          >保 存</el-button
-        >
+        <el-button type="primary" @click="save(obj)">保 存</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 <script>
+import { mapState } from 'vuex'
 export default {
-  name: "Order",
+  name: 'index',
   data() {
     return {
+      orderInfo: {},
+      newObj: {
+        name: '张三',
+        mobile: '13000000000',
+        address: '幸福小区6号楼',
+        detail: '广东省 深圳市 罗湖区 ',
+      },
+      isEdit: false,
+      curren: -1,
+      showId: -1,
+      moveHover: false, // 移入显示编辑删除
       isShowClo: true,
       dialogFormVisible: false,
-      textarea2: "",
-      input: "",
-      checked: "",
-      form: {
-        name: "",
-        region: "",
-        date1: "",
-        date2: "",
-        delivery: false,
-        type: [],
-        resource: "",
-        desc: ""
+      textarea2: '',
+      input: '',
+      checked: 0,
+      formLabelWidth: '120px',
+      obj: {
+        name: '',
+        phone: '',
+        address: '',
+        detail: '',
+        checked: '',
+        id: '',
       },
-      formLabelWidth: "120px",
       rules: {
         name: [
-          { required: true, message: "请输入活动名称", trigger: "blur" },
-          { min: 3, max: 5, message: "长度在 3 到 5 个字符", trigger: "blur" }
-        ]
-      }
-    };
+          { required: true, message: '请输入活动名称', trigger: 'blur' },
+          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' },
+        ],
+      },
+    }
+  },
+  computed: {
+    ...mapState({
+      userAddressList: (state) => state.order.userAddressList,
+    }),
+    addNum() {
+      var num = 0
+      if (!this.orderInfo.items) return
+      this.orderInfo.items.forEach((item) => {
+        num += parseFloat(
+          (item.count * item.itemInfo.priceSalePromotional).toFixed(2)
+        )
+      })
+      return num
+    },
+    addCount() {
+      var num = 0
+      if (!this.orderInfo.items) return
+      this.orderInfo.items.forEach((item) => {
+        num += item.count
+      })
+      return num
+    },
   },
   methods: {
-    handleClose() {
-      this.$refs.ruleForm.resetFields();
-      this.form = {
-        name: "",
-        region: "",
-        date1: "",
-        date2: "",
-        delivery: false,
-        type: [],
-        resource: "",
-        desc: ""
-      };
+    moveIn(index) {
+      this.showId = index
     },
-    handleSave() {
-      this.$refs.ruleForm.validate(valid => {
-        if (valid) {
-          console.log("输入正确");
-          this.dialogFormVisible = false;
-        } else {
-          console.log("输入错误");
-        }
-      });
-    }
-  }
-};
+    moveOut() {
+      this.showId = -1
+    },
+    save(obj) {
+      if (this.isEdit) {
+        this.isEdit = false
+      }
+      this.$store.dispatch('getAdd', obj)
+      this.dialogFormVisible = false
+      this.obj = {}
+    },
+    defaul(index) {
+      this.checked = index
+    },
+    showBorder(index, address) {
+      this.curren = index
+      this.newObj = address
+    },
+    // 新增
+    addAddress() {
+      this.dialogFormVisible = true
+      this.obj = {}
+    },
+    // 删除
+    handleDel(id) {
+      this.$store.dispatch('dele', id)
+    },
+    // 编辑
+    edit(Address) {
+      // 取消
+      // 确定
+      this.isEdit = true
+      this.dialogFormVisible = true
+      const { name, phone, address, detail, checked, id } = Address
+      this.obj = {
+        name,
+        phone,
+        address,
+        detail,
+        checked,
+        id,
+      }
+    },
+  },
+  async mounted() {
+    const result = await this.$API.reqAddress()
+    // console.log(result)
+    this.orderInfo = result.data.data
+  },
+}
 </script>
 <style lang="less" scoped>
+.dialog-footer {
+  text-align: center;
+}
+.showBorder {
+  border: 1px solid #f33 !important;
+}
+.error-msg {
+  margin-left: 130px;
+  margin-top: -10px;
+  margin-bottom: 10px;
+  color: #f33;
+}
 .main {
   background-color: #f0f0f0;
   font-size: 12px;
@@ -363,6 +460,7 @@ export default {
         padding: 0 20px;
         span {
           margin-right: 5px;
+          letter-spacing: 1px;
         }
       }
       .person-footer {
@@ -393,6 +491,23 @@ export default {
           }
         }
       }
+    }
+  }
+  .empty-box {
+    padding: 10px 0;
+    text-align: center;
+    .empty-img {
+      img {
+        border: 0;
+        vertical-align: middle;
+      }
+    }
+    .empty-txt {
+      color: #333;
+      font-size: 12px;
+      font-weight: 400;
+      padding: 10px;
+      margin-top: -50px;
     }
   }
 }
@@ -490,11 +605,12 @@ export default {
       span {
         font-size: 12px;
         font-weight: 400;
-        margin-left: 16px;
+        margin-left: 15px;
+        margin-right: 4px;
       }
       input {
         background-repeat: no-repeat;
-        content: "";
+        content: '';
         display: inline-block;
         height: 13px;
         position: relative;

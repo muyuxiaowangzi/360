@@ -41,7 +41,8 @@
       </el-table>
     </el-card>
     <!-- 添加地址表单 -->
-    <el-dialog
+    <AddressAlert :ruleForm="ruleForm" :changeAddress="changeAddress" />
+    <!--   <el-dialog
       custom-class="dialog"
       :visible.sync="dialogFormVisible"
       width="438px"
@@ -104,7 +105,7 @@
         >
         <el-button @click="dialogFormVisible = false">取 消</el-button>
       </div>
-    </el-dialog>
+    </el-dialog> -->
   </div>
 </template>
 
@@ -131,7 +132,7 @@ export default {
     // 编辑
     handleClick(scope) {
       this.changeAddress = true;
-      this.dialogFormVisible = true;
+      this.$bus.$emit("open", true);
       const { name, region, desc, tele, isMoRen, id } = scope.row;
       // console.log(scope.row);
       this.ruleForm = {
@@ -150,35 +151,13 @@ export default {
     },
     // 点击新建地址
     openAdd() {
-      console.log("ccc");
-      this.dialogFormVisible = true;
+      this.$bus.$emit("open", true);
       this.ruleForm = {
         name: "", //收集的姓名
         region: [], //选择地址
         desc: "", //详细地址
         tele: "" //电话
       };
-    },
-    // 添加更新地址
-    handelAdd(formName) {
-      // 点击的是编辑进入的
-      if (this.changeAddress) {
-        this.changeAddress = false;
-      } else {
-        //  点击的新建进入的
-        // 获取到新添加的地址的数据
-        const newAdd = this.$refs[formName].model;
-        const { name, region, desc, tele } = newAdd;
-        this.ruleForm = {
-          name,
-          region,
-          desc,
-          tele,
-          isMoRen: false
-        };
-      }
-      this.dialogFormVisible = false;
-      this.$store.dispatch("getAddress", this.ruleForm);
     }
   },
   data() {
@@ -193,21 +172,21 @@ export default {
         region: [], //选择地址
         desc: "", //详细地址
         tele: "" //电话
-      },
-      // 表单验证
-      rules: {
-        name: [
-          { required: true, message: "请输入活动名称", trigger: "blur" },
-          { min: 3, max: 5, message: "长度在 3 到 5 个字符", trigger: "blur" }
-        ],
-        region: [
-          { required: true, message: "请选择活动区域", trigger: "blur" },
-          { required: true, message: "请选择活动区域", trigger: "blur" },
-          { required: true, message: "请选择活动区域", trigger: "blur" }
-        ],
-        desc: [{ required: true, message: "请填写活动形式", trigger: "blur" }],
-        tele: []
       }
+      // 表单验证
+      /*  rules: {
+          name: [
+            { required: true, message: "请输入活动名称", trigger: "blur" },
+            { min: 3, max: 5, message: "长度在 3 到 5 个字符", trigger: "blur" }
+          ],
+          region: [
+            { required: true, message: "请选择活动区域", trigger: "blur" },
+            { required: true, message: "请选择活动区域", trigger: "blur" },
+            { required: true, message: "请选择活动区域", trigger: "blur" }
+          ],
+          desc: [{ required: true, message: "请填写活动形式", trigger: "blur" }],
+          tele: []
+        } */
     };
   }
 };
@@ -221,6 +200,7 @@ export default {
   text-align: center;
   margin-right: 5px;
 }
+
 .changeMoren {
   height: 20px;
   width: 60px;
@@ -228,25 +208,30 @@ export default {
   display: inline-block;
   background-color: #f63;
 }
+
 /* 添加地址 */
 .elect {
   background-color: springgreen;
   width: 288px;
 }
+
 .elect_2 {
   width: 130px;
   display: inline-block;
 }
+
 .elect_3 {
   margin-left: 28px;
   width: 130px;
   display: inline-block;
 }
+
 .dialog {
   position: relative;
   font-size: 16px;
   border-radius: 5px;
 }
+
 .dialog_title {
   width: 438px;
   height: 40px;
@@ -259,6 +244,7 @@ export default {
   box-sizing: border-box;
   border-radius: 5px 5px 0 0;
 }
+
 .close_title {
   position: absolute;
   right: 15px;
@@ -267,6 +253,7 @@ export default {
   background-color: transparent;
   outline: none;
 }
+
 .text {
   font-size: 14px;
 }
@@ -280,6 +267,7 @@ export default {
   display: table;
   content: "";
 }
+
 .clearfix:after {
   clear: both;
 }

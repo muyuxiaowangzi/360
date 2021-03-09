@@ -81,7 +81,7 @@
                         <li
                           class="cate-item"
                           v-for="(category, index) in categoryList"
-                          @click="changeChoose(index)"
+                          @click.once="changeChoose(index)"
                           :class="
                             category.ctitle === defaultSelected[0].ctitle
                               ? 'active'
@@ -564,7 +564,7 @@ export default {
     async changeChoose(currentIndex) {
       this.currentIndex = currentIndex
       const itemId = this.detailList.subItems[currentIndex].itemId
-      if (this.$route.query.itemId === itemId) return
+      // if (this.$route.query.itemId === itemId) return
       this.$router.push({ name: 'shop', query: { itemId } })
       const loading = this.$loading({
         text: '正在加载中。。。',

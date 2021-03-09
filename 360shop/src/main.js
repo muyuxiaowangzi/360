@@ -4,16 +4,19 @@ import router from "./router";
 import store from "./store";
 import Pagination from "./components/pagination";
 import TypeNav from "./components/TypeNav";
+import AddressAlert from './components/AddressAlert/index.vue'
+import RightLan from './components/RightLan/RightLan.vue'
 // 使用element-ui
 import ElementUI from "element-ui";
 import "element-ui/lib/theme-chalk/index.css";
 import "./plugins/swiper";
 import * as API from "./api/index.js";
-
+import './plugins/validate.js'
 import VueLazyload from "vue-lazyload";
 import { setCookie, getCookie, delCookie } from "./plugins/cookie.js";
 const loadimage = require("./assets/images/loading.gif");
-
+Vue.component('AddressAlert', AddressAlert)
+Vue.component('RightLan', RightLan)
 Vue.use(VueLazyload, {
   loading: loadimage
 });

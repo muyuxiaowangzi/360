@@ -46,3 +46,9 @@ export const reqShopCart = () => ajax.get(`/cart/newcart`);
 //加减商品数量
 export const reqChangeProductNum = (edit = "add", items) =>
   ajax.get(`/cart/newEditCart?edit=${edit}&items=${escape(items)}`);
+
+export const reqAddress = () => ajax.post(`/neworder/order`);
+
+export const reqAcc = obj => ajax.post(`user/doAddAddr`, obj);
+
+export const reqAzz = obj => ajax.post(`/user/doEditAddr`, obj);

@@ -158,6 +158,9 @@ export default {
       userInfo: {},
     }
   },
+  created() {
+    this.$parent.msg = 456
+  },
   mounted() {
     this.$bus.$on('showLogin', () => {
       this.dialogFormVisible = true
