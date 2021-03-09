@@ -5,13 +5,13 @@
       <a href="javascript:;">全部>></a>
     </div>
 
-    <div class="floor_bottom">
+    <div class="floor_bottom" v-if="floors[1].data.poster">
       <a href="javascript:;">
-        <img :src="floors[0].data.poster.pic" alt="" />
+        <img :src="floors[1].data.poster.pic" alt="" />
       </a>
       <a
         href="javascript:;"
-        v-for="item in floors[0].data.list"
+        v-for="item in floors[1].data.list"
         :key="item.itemId"
         @click="toShopDetail(item.itemId)"
       >
@@ -23,22 +23,22 @@
       </a>
     </div>
 
-    <div>
-      <img :src="floors[1].data.pic" alt="" />
+    <div v-if="floors[0].data">
+      <img :src="floors[0].data.pic" alt="" />
     </div>
   </div>
 </template>
 <script>
 export default {
-  name: "Floor",
-  props: ["floors"],
+  name: 'Floor',
+  props: ['floors'],
   methods: {
     //前往商品详情
     async toShopDetail(itemId) {
-      this.$router.push({ path: "/shop", query: { itemId } });
-    }
-  }
-};
+      this.$router.push({ path: '/shop', query: { itemId } })
+    },
+  },
+}
 </script>
 <style scoped>
 /* 家庭安防 */

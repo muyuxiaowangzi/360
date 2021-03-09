@@ -218,7 +218,7 @@
       </div>
     </div>
     <!-- 爆款推荐 -->
-    <div class="recommend" v-if="IndexContainer.floors">
+    <!-- <div class="recommend" v-if="IndexContainer.floors">
       <div class="recommend_text">
         <span>爆款推荐</span>
       </div>
@@ -234,7 +234,7 @@
       <a class="recommend_bottom">
         <img :src="IndexContainer.floors[5].data.pic" alt="" />
       </a>
-    </div>
+    </div> -->
 
     <!-- floor -->
     <!-- 家庭安防 -->

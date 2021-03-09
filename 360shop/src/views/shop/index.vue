@@ -48,7 +48,9 @@
               <div class="info-price">
                 <span class="price">价 格</span>
                 <div class="info-price-detail">
-                  <strong class="nowPrice">￥{{ shopDetail.priceSale }}</strong>
+                  <strong class="nowPrice"
+                    >￥{{ shopDetail.priceSale * skuNum }}</strong
+                  >
                   <i class="oldPrice">￥{{ shopDetail.priceMarket }}</i>
                 </div>
               </div>
@@ -60,9 +62,9 @@
                     <i class="info-box-title">直降</i>
                     <span>{{ priceData.current.text }}</span>
                   </div>
-                  <div class="info-box" v-else>
-                    <i class="info-box-title">满赠</i>
-                    <span>满299送湿巾</span>
+                  <div class="info-box" v-if="detailList.gifts">
+                    <i class="info-box-title">赠品</i>
+                    <span>{{ detailList.gifs[0].item[0].title }}</span>
                   </div>
                 </div>
               </div>
@@ -574,6 +576,7 @@ export default {
 
       // const shopDetail =  this.detailList.itemInfo
       // this.shopDetail = shopDetail
+      this.skuNum = 1
     },
     // 获取商品详情数据和商品信息数据
     async getShopDetail() {
