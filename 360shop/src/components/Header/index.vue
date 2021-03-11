@@ -95,7 +95,11 @@
                 <div>我的收藏</div>
                 <div>我的积分</div>
                 <div>我的预约</div>
-                <div>收货地址</div>
+                <div>
+                  <router-link to="/order" style="outline: none"
+                    >收货地址</router-link
+                  >
+                </div>
                 <div>帐号设置</div>
                 <div @click="logOut">退出登录</div>
               </div>
