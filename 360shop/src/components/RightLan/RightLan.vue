@@ -15,7 +15,7 @@
       </a>
     </div>
     <div class="lan_bottom">
-      <a href="javascript:;" class="iconfont icon-erweima"></a>
+      <a href="javascript:;" class="iconfont icon-ico"></a>
       <a
         href="javascript:;"
         class="iconfont icon-fanhuidingbu"
@@ -29,29 +29,28 @@
 </template>
 <script>
 export default {
-  name: "RightLan",
+  name: 'RightLan',
   data() {
     return {
-      type: "none"
-    };
+      type: 'none',
+    }
   },
   methods: {
     goTop() {
-      document.documentElement.scrollTop = 0;
-    }
+      document.documentElement.scrollTop = 0
+    },
   },
   mounted() {
-    window.addEventListener("scroll", () => {
-      let scroll =
-        document.documentElement.scrollTop || document.body.scrollTop;
+    window.addEventListener('scroll', () => {
+      let scroll = document.documentElement.scrollTop || document.body.scrollTop
       if (scroll >= 800) {
-        this.type = "block";
+        this.type = 'block'
       } else {
-        this.type = "none";
+        this.type = 'none'
       }
-    });
-  }
-};
+    })
+  },
+}
 </script>
 <style scoped>
 .rightlan {
@@ -72,6 +71,7 @@ export default {
   display: flex;
   transform: translate(-50%, -50%);
   flex-direction: column;
+  text-align: center;
 }
 .rightlan .lan_center a {
   font-size: 22px;
@@ -168,5 +168,8 @@ export default {
 .rightlan .lan_bottom a {
   font-size: 22px;
   margin: 5px 0;
+}
+.icon-weixin {
+  font-size: 33px !important;
 }
 </style>

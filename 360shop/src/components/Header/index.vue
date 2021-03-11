@@ -126,7 +126,7 @@
               <input
                 type="text"
                 class="ipt"
-                v-model="key_word"
+                v-model.trim="key_word"
                 @keyup.enter="toSearch"
               />
               <i class="iconfont icon-sousuo" @click="toSearch()"></i>

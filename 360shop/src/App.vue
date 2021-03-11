@@ -3,6 +3,7 @@
     <Header />
     <router-view></router-view>
     <Footer></Footer>
+    <RightLan></RightLan>
   </div>
 </template>
 <script>
