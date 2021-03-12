@@ -25,14 +25,31 @@ const mutations = {
   // 编辑
   updatedAddress(state, obj) {
     //为什么不能解构obj然后直接赋值给item？？？？？ 
-    state.tableData.forEach((item) => {
+    // state.tableData.forEach((item) => {
+    //   if (item.id === obj.id) {
+    //     item = obj
+    //     console.log(item)
+    //     /*   for (var k in obj) {
+    //         item[k] = obj[k];
+    //       } */
+    //   }
+    //   console.log(item)
+    // })
+    /* 
+        state.tableData = state.tableData.map((item) => {
+          if (item.id === obj.id) {
+            item = obj
+          }
+          return item
+        }) */
+    state.tableData = state.tableData.reduce((pir, item) => {
       if (item.id === obj.id) {
-        /*  for (var k in obj) {
-           item[k] = obj[k];
-         } */
-        item = { ...obj }
+        item = obj
       }
-    })
+      pir.push(item)
+      return pir
+    }, [])
+
   },
   deleAddress(state, id) {
     state.tableData = state.tableData.filter((item) => item.id !== id)
@@ -40,10 +57,8 @@ const mutations = {
 }
 const actions = {
   getAddress({ commit, state }, obj) {
-    // console.log('obj', obj)
     if (obj.id) {
       commit('updatedAddress', obj)
-      // console.log(333)
     } else {
       let id;
       if (!state.tableData.length) {
@@ -51,9 +66,7 @@ const actions = {
       } else {
         const upId = state.tableData[state.tableData.length - 1].id
         id = upId + 1
-
       }
-      // console.log("id", id)
       obj = {
         id,
         ...obj

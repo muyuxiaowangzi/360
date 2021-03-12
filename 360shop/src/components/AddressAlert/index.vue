@@ -15,7 +15,7 @@
     <el-form
       :model="ruleForm"
       :rules="rules"
-      ref="rulesForm"
+      ref="ruleForm"
       label-width="100px"
       class="demo-ruleForm"
       size="mini"
@@ -54,7 +54,9 @@
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
-      <el-button type="primary" @click="handelAdd('ruleForm')">保 存</el-button>
+      <el-button type="primary" @click="submitForm('ruleForm')"
+        >保 存</el-button
+      >
       <el-button @click="dialogFormVisible = false">取 消</el-button>
     </div>
   </el-dialog>
@@ -62,7 +64,7 @@
 
 <script>
 export default {
-  name: "",
+  name: "AddressAlert",
   props: {
     ruleForm: Object, //传入的弹出框的值
     changeAddress: Boolean //是否是点击编辑进入的
@@ -91,49 +93,18 @@ export default {
     });
   },
   methods: {
-    handelAdd(formName) {
-      // 点击的是编辑进入的
-      if (this.changeAddress) {
-        // this.changeAddress = false;
-        console.log(this.changeAddress, "new");
-        this.$bus.$on("bianji", data => {
-          console.log(data, "new");
-          const { name, region, desc, tele, isMoRen, id } = data;
-          this.ruleForm = {
-            name,
-            region,
-            desc,
-            tele,
-            isMoRen,
-            id
-          };
-          this.$store.dispatch("getAddress", this.ruleForm);
-        });
-        // console.log(this.ruleForm);
-      } else {
-        // 获取到新添加的地址的数据
-        this.ruleForm = {
-          name: "", //收集的姓名
-          region: [], //选择地址
-          desc: "", //详细地址
-          tele: "" //电话
-        };
-        const newAdd = this.$refs[formName].model;
-        const { name, region, desc, tele } = newAdd;
-        this.ruleForm = {
-          name,
-          region,
-          desc,
-          tele,
-          isMoRen: false
-        };
-      }
-
+    submitForm(formName) {
+      let ruleForm;
+      // 获取到输入的内容
+      const newAdd = this.$refs[formName].model;
+      ruleForm = {
+        ...this.ruleForm,
+        ...newAdd
+      };
       this.dialogFormVisible = false;
-      this.$store.dispatch("getAddress", this.ruleForm);
+      this.$emit("changeRuleForm", ruleForm);
     }
   }
 };
 </script>
-
 <style></style>

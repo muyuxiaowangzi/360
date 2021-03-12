@@ -41,7 +41,11 @@
       </el-table>
     </el-card>
     <!-- 添加地址表单 -->
-    <AddressAlert :ruleForm="ruleForm" :changeAddress="changeAddress" />
+    <AddressAlert
+      :ruleForm="ruleForm"
+      :changeAddress="changeAddress"
+      @changeRuleForm="changeRuleForm"
+    />
     <!--   <el-dialog
       custom-class="dialog"
       :visible.sync="dialogFormVisible"
@@ -116,6 +120,11 @@ export default {
     ...mapState({ tableData: state => state.address.tableData })
   },
   methods: {
+    // 修改数据
+    changeRuleForm(obj) {
+      this.ruleForm = { ...this.ruleForm, ...obj };
+      this.$store.dispatch("getAddress", this.ruleForm);
+    },
     // 设置默认
     handleMoRen(scope) {
       const {
@@ -134,7 +143,6 @@ export default {
       this.changeAddress = true;
       this.$bus.$emit("open", true);
       const { name, region, desc, tele, isMoRen, id } = scope.row;
-      // console.log(scope.row);
       this.ruleForm = {
         name,
         region,
@@ -143,10 +151,10 @@ export default {
         isMoRen,
         id
       };
+      this.$bus.$emit("bianji", this.ruleForm);
     },
     // 删除
     handleDel(row) {
-      console.log(row);
       this.$store.dispatch("dele", row.id);
     },
     // 点击新建地址
@@ -164,8 +172,6 @@ export default {
     return {
       changeAddress: false, // 点击编辑按钮
       dialogTableVisible: false, //保单是否显示
-      // 每一项数据的具体信息再点击新建的时候展示的
-      dialogFormVisible: false,
       ruleForm: {
         isMoRen: false,
         name: "", //收集的姓名
@@ -173,20 +179,6 @@ export default {
         desc: "", //详细地址
         tele: "" //电话
       }
-      // 表单验证
-      /*  rules: {
-          name: [
-            { required: true, message: "请输入活动名称", trigger: "blur" },
-            { min: 3, max: 5, message: "长度在 3 到 5 个字符", trigger: "blur" }
-          ],
-          region: [
-            { required: true, message: "请选择活动区域", trigger: "blur" },
-            { required: true, message: "请选择活动区域", trigger: "blur" },
-            { required: true, message: "请选择活动区域", trigger: "blur" }
-          ],
-          desc: [{ required: true, message: "请填写活动形式", trigger: "blur" }],
-          tele: []
-        } */
     };
   }
 };
